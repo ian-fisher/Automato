@@ -9,7 +9,7 @@ var cy = cytoscape({
       selector: 'node',
       style: {
         'background-color': '#D3D3D3',
-        'label': 'data(id)'
+        'label': 'data(label)'
       }
     },
 
@@ -44,19 +44,21 @@ function getRandom(min, max) {
 
 // add node
 function AddNode() {
+  var id = maxNodeId++;
   var eles = cy.add(
     { group: 'nodes',
       position: {
         x: getRandom(0.3, 0.7) * cy.width(),
         y: getRandom(0.3, 0.7) * cy.height(),
       },
-      data: { id: maxNodeId++
+      data: { 
+        id: id,
+        label: `Node ${id}`
       }
     },
   );
   addQtip(eles);
 }
-
 
 // remove node
 function RemoveNode(i) {
@@ -67,11 +69,16 @@ function RemoveNode(i) {
   );
 }
 
-
+// add qtip to new node
 function addQtip(node) {
   node.qtip({
   content: function(){
-    return `<b>Node ${this.id()}</b><br>
+    return `
+    <form>
+    <input id="node_${node.data('id')}_label_edit"
+    type="text" onchange="editNodeLabel('${node.data('id')}', this.value)"
+    value="${node.data('label')}">
+    </form>
     <button onclick='RemoveNode("${this.id()}")'>Remove</button>
     `
   },
@@ -89,22 +96,10 @@ function addQtip(node) {
 });
 }
 
-
-// call on core
-cy.qtip({
-  content: 'qtip on the core background',
-  position: {
-    my: 'top center',
-    at: 'bottom center'
-  },
-  show: {
-    cyBgOnly: true
-  },
-  style: {
-    classes: 'qtip-bootstrap',
-    tip: {
-      width: 16,
-      height: 8
-    }
-  }
-});
+// edit node label
+function editNodeLabel(i, newLabel) {
+  var node = cy.$id(i);
+  node.data('label', newLabel);
+  node.qtip('api').destroy();
+  addQtip(node);
+}
