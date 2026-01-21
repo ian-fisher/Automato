@@ -1,0 +1,37 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Automato</title>
+  <link rel="icon" type="image/png" href="/images/logo.png">
+  <style>
+    #graph {
+  width: 90vw;
+  height: 80vh;
+  border: 1px solid black;
+}
+  </style>
+  <link rel="stylesheet" type="text/css" href="http://cdnjs.cloudflare.com/ajax/libs/qtip2/2.2.0/jquery.qtip.css">
+
+		<script src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
+		<script src="http://cdnjs.cloudflare.com/ajax/libs/qtip2/2.2.0/jquery.qtip.js"></script>
+</head>
+<body>
+  <h1>Automato</h1>
+  <p>Here, you can build and test your own acceptor.</p>
+  <button onclick="AddNode();">Add node</button>
+  <button onclick="RemoveLastNode();">Remove last node</button>
+
+  <div id="graph">
+    <!-- Graph will be rendered here -->
+  </div>
+</body>
+<script src="script/libs/cytoscape.min.js"></script>
+<script src="script/libs/cytoscape-qtip.js"></script>
+<script src="script/script.js"></script>
+<link rel="stylesheet" type="text/css" href="http://cdnjs.cloudflare.com/ajax/libs/qtip2/2.2.0/jquery.qtip.css">
+
+		<script src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
+		<script src="http://cdnjs.cloudflare.com/ajax/libs/qtip2/2.2.0/jquery.qtip.js"></script>
+		<script src="https://unpkg.com/cytoscape/dist/cytoscape.min.js"></script>
+</html>
