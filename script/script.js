@@ -32,6 +32,8 @@ var cy = cytoscape({
 
 });
 
+var maxNodeId = 0;
+
 // can use reference to eles later
 AddNode();
 
@@ -48,7 +50,7 @@ function AddNode() {
         x: getRandom(0.3, 0.7) * cy.width(),
         y: getRandom(0.3, 0.7) * cy.height(),
       },
-      data: { id: 'n' + cy.nodes().length
+      data: { id: maxNodeId++
       }
     },
   );
@@ -58,21 +60,19 @@ function AddNode() {
 
 // remove node
 function RemoveNode(i) {
-  var eles = cy.remove(
-    cy.nodes()[i]
+  node = cy.$id(i);
+  node.qtip('api').destroy();
+  cy.remove(
+    node
   );
 }
 
-// remove last added node
-function RemoveLastNode() {
-  RemoveNode(cy.nodes().length - 1);
-}
 
 function addQtip(node) {
   node.qtip({
   content: function(){
     return `<b>Node ${this.id()}</b><br>
-    <button onclick='RemoveNode("${this.id().substring(1)}")'>Remove</button>
+    <button onclick='RemoveNode("${this.id()}")'>Remove</button>
     `
   },
   position: {
