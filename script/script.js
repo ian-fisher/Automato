@@ -9,7 +9,8 @@ var cy = cytoscape({
       selector: 'node',
       style: {
         'background-color': '#D3D3D3',
-        'label': 'data(label)'
+        'label': 'data(label)',
+        'text-wrap':'wrap'
       }
     },
 
@@ -35,7 +36,7 @@ var cy = cytoscape({
 var maxNodeId = 0;
 
 // can use reference to eles later
-AddNode();
+restoreGraph();
 
 
 function getRandom(min, max) {
@@ -45,7 +46,7 @@ function getRandom(min, max) {
 // add node
 function AddNode() {
   var id = maxNodeId++;
-  var eles = cy.add(
+  var node = cy.add(
     { group: 'nodes',
       position: {
         x: getRandom(0.3, 0.7) * cy.width(),
@@ -53,11 +54,16 @@ function AddNode() {
       },
       data: { 
         id: id,
-        label: `Node ${id}`
+        label: `n${id}`
       }
     },
   );
-  addQtip(eles);
+  node.on('free', 
+    function(evt){
+      saveGraph();
+    });
+  addQtip(node);
+  saveGraph();
 }
 
 // remove node
@@ -67,6 +73,7 @@ function RemoveNode(i) {
   cy.remove(
     node
   );
+  saveGraph();
 }
 
 // add qtip to new node
@@ -74,10 +81,10 @@ function addQtip(node) {
   node.qtip({
   content: function(){
     return `
-    <form>
+    <form onkeydown="return event.key != 'Enter';">
     <input id="node_${node.data('id')}_label_edit"
     type="text" onchange="editNodeLabel('${node.data('id')}', this.value)"
-    value="${node.data('label')}">
+    value="${node.data('label')}" maxlength="5">
     </form>
     <button onclick='RemoveNode("${this.id()}")'>Remove</button>
     `
@@ -102,4 +109,32 @@ function editNodeLabel(i, newLabel) {
   node.data('label', newLabel);
   node.qtip('api').destroy();
   addQtip(node);
+  saveGraph();
 }
+
+function saveGraph() {
+  window.localStorage.setItem("graph", JSON.stringify( cy.json() ));
+}
+
+function restoreGraph() {
+  cy.elements().remove();
+  cy.json({ elements: JSON.parse( window.localStorage.getItem("graph") ).elements }).layout({ name: 'preset' }).run();
+  for (const node of cy.nodes()) {
+    addQtip(node);
+    var nodeId = parseInt(node.data('id'));
+    if (nodeId >= maxNodeId) {
+      maxNodeId = nodeId + 1;
+    }
+    node.on('free', 
+    function(evt){
+      saveGraph();
+    });
+  }
+}
+
+function clearGraph() {
+  cy.elements().remove();
+  maxNodeId = 0;
+  window.localStorage.removeItem("graph");
+}
+
