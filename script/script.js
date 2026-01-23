@@ -112,7 +112,7 @@ function addQtip(node) {
     ${node.data('isFinal') ? 'checked' : ''}
     onchange="nodeFinalCallback('${node.data('id')}')">
     </form>
-    <button onclick='RemoveNode("${this.id()}")'>Remove node</button>
+    <button onclick='removeNode("${this.id()}")'>Remove node</button>
     <button onclick='addEdgeCallback("${this.id()}")'>Add edge</button>
     `
   },

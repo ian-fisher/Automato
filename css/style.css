@@ -3,3 +3,13 @@
   height: 80vh;
   border: 1px solid black;
 }
+
+button {
+    border-radius: 5px;
+    border: 1px solid black;
+    margin: 5px;
+}
+
+body {
+    margin: 20px;
+}
