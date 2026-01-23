@@ -7,11 +7,10 @@ class Transition {
 }
 
 class Acceptor {
-    constructor (states, Transition, startState, acceptedState){
-        this.states = states;
-        this.Transition = transition;
+    constructor (transition, startState, acceptedStates){
+        this.transition = transition;
         this.startState = startState;
-        this.acceptedState = acceptedState;
+        this.acceptedStates = acceptedStates;
     }
 
     runSim(input){ //when using this func, we have to use getInutForomField.js it already takes the value of a text field labeled "input"
