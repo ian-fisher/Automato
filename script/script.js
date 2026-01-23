@@ -95,9 +95,9 @@ function addQtip(node) {
     <input type="checkbox" id="is_final"
     ${node.data('isFinal') ? 'checked' : ''}
     onchange="nodeFinalCallback('${node.data('id')}')">
-
     </form>
     <button onclick='RemoveNode("${this.id()}")'>Remove</button>
+    <button onclick='addEdgeCallback("${this.id()}")'>Add edge</button>
     `
   },
   position: {
@@ -123,10 +123,12 @@ function editNodeLabel(i, newLabel) {
   saveGraph();
 }
 
+// save graph to local storage
 function saveGraph() {
   window.localStorage.setItem("graph", JSON.stringify( cy.json() ));
 }
 
+// restore graph from local storage
 function restoreGraph() {
   cy.elements().remove();
   console.log(window.localStorage.getItem("graph"))
@@ -148,12 +150,14 @@ function restoreGraph() {
   }
 }
 
+// remove all nodes and edges
 function clearGraph() {
   cy.elements().remove();
   maxNodeId = 0;
   window.localStorage.removeItem("graph");
 }
 
+// on clicking "is final" checkbox
 function nodeFinalCallback(i) {
   var node = cy.$id(i);
   var isFinal = node.data('isFinal') || false;
@@ -169,3 +173,42 @@ function nodeFinalCallback(i) {
   addQtip(node);
   saveGraph();
 }
+
+// on clicking "add edge" button
+function addEdgeCallback(sourceId) {
+  window.currentAddingEdgeSource = sourceId;
+}
+
+// add edge between two nodes
+function addEdge(sourceId, targetId) {
+  cy.add(
+    { group: 'edges',
+      data: { 
+        id: `e${sourceId}-${targetId}`,
+        source: sourceId,
+        target: targetId,
+      }
+    },
+  );
+  saveGraph();
+}
+
+// callback: tap on node
+// if currently adding edge, add edge
+// else, show qtip
+cy.on('tap', 'node', function(evt){
+  var node = evt.target;
+  if (window.currentAddingEdgeSource != null) {
+    addEdge(window.currentAddingEdgeSource, node.data('id'));
+    window.currentAddingEdgeSource = null;
+  } else {
+    node.qtip('api').show();
+  }
+});
+
+// clicking on background cancels edge adding
+cy.on('tap', function (evt) {
+  if (evt.target === cy) {
+    window.currentAddingEdgeSource = null;
+  }
+});
