@@ -1,3 +1,8 @@
+nodeBasicColor = '#D3D3D3';
+nodeFinalColor = '#90EE90';
+edgeBasicColor = '#ccc';
+
+
 var cy = cytoscape({
 
   // container to render the graph in
@@ -8,7 +13,7 @@ var cy = cytoscape({
     {
       selector: 'node',
       style: {
-        'background-color': '#D3D3D3',
+        'background-color': nodeBasicColor,
         'label': 'data(label)',
         'text-wrap':'wrap'
       }
@@ -18,8 +23,8 @@ var cy = cytoscape({
       selector: 'edge',
       style: {
         'width': 3,
-        'line-color': '#ccc',
-        'target-arrow-color': '#ccc',
+        'line-color': edgeBasicColor,
+        'target-arrow-color': edgeBasicColor,
         'target-arrow-shape': 'triangle',
         'curve-style': 'bezier'
       }
@@ -85,6 +90,12 @@ function addQtip(node) {
     <input id="node_${node.data('id')}_label_edit"
     type="text" onchange="editNodeLabel('${node.data('id')}', this.value)"
     value="${node.data('label')}" maxlength="5">
+    <br>
+    <label for="is_final">Is Final:</label>
+    <input type="checkbox" id="is_final"
+    ${node.data('isFinal') ? 'checked' : ''}
+    onchange="nodeFinalCallback('${node.data('id')}')">
+
     </form>
     <button onclick='RemoveNode("${this.id()}")'>Remove</button>
     `
@@ -118,8 +129,13 @@ function saveGraph() {
 
 function restoreGraph() {
   cy.elements().remove();
+  console.log(window.localStorage.getItem("graph"))
   cy.json({ elements: JSON.parse( window.localStorage.getItem("graph") ).elements }).layout({ name: 'preset' }).run();
   for (const node of cy.nodes()) {
+    isFinal = node.data('isFinal') || false;
+    if (isFinal) {
+      node.style('background-color', nodeFinalColor);
+    }
     addQtip(node);
     var nodeId = parseInt(node.data('id'));
     if (nodeId >= maxNodeId) {
@@ -138,3 +154,18 @@ function clearGraph() {
   window.localStorage.removeItem("graph");
 }
 
+function nodeFinalCallback(i) {
+  var node = cy.$id(i);
+  var isFinal = node.data('isFinal') || false;
+  if (isFinal) {
+    node.data('isFinal', false);
+    node.style('background-color', nodeBasicColor);
+  }
+  else {
+    node.data('isFinal', true);
+    node.style('background-color', nodeFinalColor);
+  }
+  node.qtip('api').destroy();
+  addQtip(node);
+  saveGraph();
+}
