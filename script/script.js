@@ -91,12 +91,17 @@ function addQtip(node) {
     type="text" onchange="editNodeLabel('${node.data('id')}', this.value)"
     value="${node.data('label')}" maxlength="5">
     <br>
-    <label for="is_final">Is Final:</label>
-    <input type="checkbox" id="is_final"
+    <label for="is_initial_${node.data('id')}">Is Initial:</label>
+    <input type="checkbox" id="is_initial_${node.data('id')}"
+    ${node.data('isInitial') ? 'checked' : ''}
+    onchange="nodeInitialCallback('${node.data('id')}')">
+    <br>
+    <label for="is_final_${node.data('id')}">Is Final:</label>
+    <input type="checkbox" id="is_final_${node.data('id')}"
     ${node.data('isFinal') ? 'checked' : ''}
     onchange="nodeFinalCallback('${node.data('id')}')">
     </form>
-    <button onclick='RemoveNode("${this.id()}")'>Remove</button>
+    <button onclick='RemoveNode("${this.id()}")'>Remove node</button>
     <button onclick='addEdgeCallback("${this.id()}")'>Add edge</button>
     `
   },
@@ -134,9 +139,11 @@ function restoreGraph() {
   console.log(window.localStorage.getItem("graph"))
   cy.json({ elements: JSON.parse( window.localStorage.getItem("graph") ).elements }).layout({ name: 'preset' }).run();
   for (const node of cy.nodes()) {
-    isFinal = node.data('isFinal') || false;
-    if (isFinal) {
+    if (node.data('isFinal')) {
       node.style('background-color', nodeFinalColor);
+    }
+    if (node.data('isInitial')) {
+      node.style('shape', 'round-triangle');
     }
     addQtip(node);
     var nodeId = parseInt(node.data('id'));
@@ -155,6 +162,49 @@ function clearGraph() {
   cy.elements().remove();
   maxNodeId = 0;
   window.localStorage.removeItem("graph");
+}
+
+// on clicking "is final" checkbox
+function nodeFinalCallback(i) {
+  var node = cy.$id(i);
+  var isFinal = node.data('isFinal') || false;
+  if (isFinal) {
+    node.data('isFinal', false);
+    node.style('background-color', nodeBasicColor);
+  }
+  else {
+    node.data('isFinal', true);
+    node.style('background-color', nodeFinalColor);
+  }
+  node.qtip('api').destroy();
+  addQtip(node);
+  saveGraph();
+}
+
+// on clicking "is initial" checkbox
+function nodeInitialCallback(i) {
+  var node = cy.$id(i);
+  var isInitial = node.data('isInitial') || false;
+  if (isInitial) {
+    node.data('isInitial', false);
+    node.style('shape', 'ellipse');
+    window.localStorage.removeItem("initialNodeId");
+  }
+  else {
+    if (window.localStorage.getItem("initialNodeId") != null) {
+      var initialNode = cy.$id(window.localStorage.getItem("initialNodeId"));
+      initialNode.data('isInitial', false);
+      initialNode.style('shape', 'ellipse');
+      initialNode.qtip('api').destroy();
+      addQtip(initialNode);
+    }
+    node.data('isInitial', true);
+    node.style('shape', 'round-triangle');
+    window.localStorage.setItem("initialNodeId", i);
+  }
+  node.qtip('api').destroy();
+  addQtip(node);
+  saveGraph();
 }
 
 // on clicking "is final" checkbox
