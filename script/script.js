@@ -316,3 +316,14 @@ cy.on('tap', function (evt) {
     window.currentAddingEdgeSource = null;
   }
 });
+
+// export graph as png
+function exportPNG() {
+  var png64 = cy.png({scale: 1, full: true});
+  const a = document.createElement('a');
+  a.href = png64;
+  a.download = 'graph.png';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}

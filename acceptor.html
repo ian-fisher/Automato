@@ -19,12 +19,15 @@
 <body>
   <h1>Automato</h1>
   <p>Here, you can build and test your own acceptor.</p>
-  <button onclick="AddNode();">Add node</button>
+  <button onclick="addNode();">Add node</button>
   <button onclick="clearGraph();">Clear</button>
+  <button onclick="exportPNG();">Export PNG</button>
 
   <div id="graph">
     <!-- Graph will be rendered here -->
   </div>
+
+  <image id="image_PNG" alt="Exported PNG will appear here">
 </body>
 <script src="script/libs/cytoscape.min.js"></script>
 <script src="script/libs/cytoscape-qtip.js"></script>
