@@ -1,8 +1,13 @@
-let counter = 0;
+let eingabewortVar = "";
 
-function updateCounter() {
-    counter++;
-    document.getElementById("count").textContent = counter;
+const fieldValue = document.getElementById('textFieldID');
+const display = document.getElementById('inputInWeb');
+const submitBtn = document.getElementById('submitButton');
+
+function getEingabewort() {
+    eingabewortVar = fieldValue.value;
+    display.textContent = eingabewortVar;
 }
 
-document.getElementById("button").onclick = updateCounter;
+submitBtn.addEventListener('click', getEingabewort);
+display.textContent = eingabewortVar;
