@@ -23,6 +23,7 @@ var cy = cytoscape({
       selector: 'edge',
       style: {
         'width': 3,
+        'label': 'data(label)',
         'line-color': edgeBasicColor,
         'target-arrow-color': edgeBasicColor,
         'target-arrow-shape': 'triangle',
@@ -49,7 +50,7 @@ function getRandom(min, max) {
 }
 
 // add node
-function AddNode() {
+function addNode() {
   var id = maxNodeId++;
   var node = cy.add(
     { group: 'nodes',
@@ -72,11 +73,21 @@ function AddNode() {
 }
 
 // remove node
-function RemoveNode(i) {
+function removeNode(i) {
   node = cy.$id(i);
   node.qtip('api').destroy();
   cy.remove(
     node
+  );
+  saveGraph();
+}
+
+// remove edge
+function removeEdge(i) {
+  edge = cy.$id(i);
+  edge.qtip('api').destroy();
+  cy.remove(
+    edge
   );
   saveGraph();
 }
@@ -119,12 +130,49 @@ function addQtip(node) {
 });
 }
 
+// add qtip to edge
+function addQtipEdge(edge) {
+  edge.qtip({
+  content: function(){
+    return `
+    <form onkeydown="return event.key != 'Enter';">
+    <label for="edge_${edge.data('id')}_label_edit">Symbols:</label>
+    <input id="edge_${edge.data('id')}_label_edit"
+    type="text" onchange="editEdgeLabel('${edge.data('id')}', this.value)"
+    value="${edge.data('label') ?? ''}">
+    </form>
+    <button onclick='removeEdge("${this.id()}")'>Remove edge</button>
+    `
+  },
+  position: {
+    my: 'top center',
+    at: 'bottom center'
+  },
+  style: {
+    classes: 'qtip-bootstrap',
+    tip: {
+      width: 16,
+      height: 8
+    }
+  }
+});
+}
+
 // edit node label
 function editNodeLabel(i, newLabel) {
   var node = cy.$id(i);
   node.data('label', newLabel);
   node.qtip('api').destroy();
   addQtip(node);
+  saveGraph();
+}
+
+// edit edge label
+function editEdgeLabel(i, newLabel) {
+  var edge = cy.$id(i);
+  edge.data('label', newLabel);
+  edge.qtip('api').destroy();
+  addQtipEdge(edge);
   saveGraph();
 }
 
@@ -155,7 +203,11 @@ function restoreGraph() {
       saveGraph();
     });
   }
+  for (const edge of cy.edges()) {
+    addQtipEdge(edge);
+  }
 }
+
 
 // remove all nodes and edges
 function clearGraph() {
@@ -240,6 +292,8 @@ function addEdge(sourceId, targetId) {
       }
     },
   );
+  var edge = cy.$id(`e${sourceId}-${targetId}`);
+  addQtipEdge(edge);
   saveGraph();
 }
 
