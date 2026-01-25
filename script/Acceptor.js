@@ -7,14 +7,13 @@ class Transition {
 }
 
 class Acceptor {
-    constructor (states, Transition, startState, acceptedState){
-        this.states = states;
+    constructor (Transition, startState, acceptedState){
         this.Transition = transition;
         this.startState = startState;
         this.acceptedState = acceptedState;
     }
 
-    runSim(input){ //when using this func, we have to use getInutForomField.js it already takes the value of a text field labeled "input"
+    runAcceptor(input){ //when using this func, we have to use getInutForomField.js it already takes the value of a text field labeled "input"
         let currentState = this.startState
         let position = 0;
 
@@ -40,3 +39,4 @@ class Acceptor {
         }
     }
 }
+
