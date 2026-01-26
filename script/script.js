@@ -80,6 +80,9 @@ function removeNode(i) {
     node
   );
   saveGraph();
+  if (window.localStorage.getItem("initialNodeId") == i) {
+    window.localStorage.removeItem("initialNodeId");
+  }
 }
 
 // remove edge
@@ -214,6 +217,7 @@ function clearGraph() {
   cy.elements().remove();
   maxNodeId = 0;
   window.localStorage.removeItem("graph");
+  window.localStorage.removeItem("initialNodeId");
 }
 
 // on clicking "is final" checkbox
@@ -244,6 +248,7 @@ function nodeInitialCallback(i) {
   }
   else {
     if (window.localStorage.getItem("initialNodeId") != null) {
+      console.log(window.localStorage.getItem("initialNodeId"))
       var initialNode = cy.$id(window.localStorage.getItem("initialNodeId"));
       initialNode.data('isInitial', false);
       initialNode.style('shape', 'ellipse');
@@ -259,22 +264,6 @@ function nodeInitialCallback(i) {
   saveGraph();
 }
 
-// on clicking "is final" checkbox
-function nodeFinalCallback(i) {
-  var node = cy.$id(i);
-  var isFinal = node.data('isFinal') || false;
-  if (isFinal) {
-    node.data('isFinal', false);
-    node.style('background-color', nodeBasicColor);
-  }
-  else {
-    node.data('isFinal', true);
-    node.style('background-color', nodeFinalColor);
-  }
-  node.qtip('api').destroy();
-  addQtip(node);
-  saveGraph();
-}
 
 // on clicking "add edge" button
 function addEdgeCallback(sourceId) {
