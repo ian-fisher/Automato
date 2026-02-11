@@ -138,11 +138,12 @@ function addQtipEdge(edge) {
   edge.qtip({
   content: function(){
     return `
-    <form onkeydown="return event.key != 'Enter';">
+    <form onkeydown="if event.key == 'Enter' {edgeFormSubmit(event);}">
     <label for="edge_${edge.data('id')}_label_edit">Symbols:</label>
     <input id="edge_${edge.data('id')}_label_edit"
     type="text" onchange="editEdgeLabel('${edge.data('id')}', this.value)"
-    value="${edge.data('label') ?? ''}">
+    onkeydown="if (event.key === 'Enter') { event.preventDefault(); edgeFormSubmit(${edge.data('id')}); }"
+    maxlength="1">
     </form>
     <button onclick='removeEdge("${this.id()}")'>Remove edge</button>
     `
@@ -159,6 +160,11 @@ function addQtipEdge(edge) {
     }
   }
 });
+}
+
+function edgeFormSubmit(event) {
+  event.preventDefault();
+  console.log(event);
 }
 
 // edit node label
