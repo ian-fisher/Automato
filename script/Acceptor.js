@@ -15,7 +15,7 @@ class Acceptor {
         this.acceptedStates = [];
     }
 
-    //works through a word (which is an array of characters) and return whether the path is accepted or not
+    //works through a word and returns whether the path is accepted or not NO ERROR HANDLING
     runAcceptor(word){
         let currentState = this.startState;
 
@@ -70,5 +70,5 @@ var checkWordAndPrint = function(word) {
 
     var result = ACCEPTOR.runAcceptor(word);
 
-    console.log("Word" + "is" + (result.accepted ? " accepted." : " not accepted."));
+    console.log("Word is" + (result.accepted ? " accepted." : " not accepted."));
 }
