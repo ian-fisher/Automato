@@ -18,10 +18,30 @@
     </div>         
   </div>
   <p>Here, you can build and test your own acceptor.</p>
+
+  <hr>
+
+  <!-- Input word -->
+  <form id="inputWordForm">
+    <div class="form-group">
+      <label id="inputWordLabel" for="inputWord">Input word</label>
+      <input type="text" class="form-control" id="inputWord" aria-describedby="inputWordDescription" placeholder="e.g. abacaba">
+      <small id="inputWordDescription" class="form-text text-muted">Enter the input word for the acceptor.</small>
+    </div>
+    <button
+    type="submit" class="btn btn-secondary"
+    onclick="inputWordSubmitHandler(event);"
+    >Run acceptor</button>
+  </form> 
+  <hr>
+
+  <!-- Graph controls -->
   <button onclick="addNode();">Add node</button>
   <button onclick="clearGraph();">Clear</button>
   <button onclick="exportPNG();">Export PNG</button>
 
+
+  <!-- Graph --->
   <div id="graph">
     <!-- Graph will be rendered here -->
   </div>
@@ -33,4 +53,6 @@
 <script src="script/libs/cytoscape.min.js"></script>
 <script src="script/libs/cytoscape-qtip.js"></script>
 <script src="script/script.js"></script>
+<script src="script/Acceptor.js"></script>
+<script src="script/wordinput.js"></script>
 </html>
