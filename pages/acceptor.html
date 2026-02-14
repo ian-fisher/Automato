@@ -5,10 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Automato</title>
 
+    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+
+    <!-- jQuery qTip2 CSS - MUST come before custom CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/qtip2/3.0.3/jquery.qtip.min.css">
+
+    <!-- Custom CSS -->
     <link rel="stylesheet" type="text/css" href="../css/unified.css">
     <link rel="stylesheet" type="text/css" href="../css/acceptor.css">
+
     <link rel="icon" type="image/png" href="../images/logo.png">
 </head>
 
@@ -77,12 +86,23 @@
     </div>
 </div>
 
+<!-- CRITICAL: Scripts must be loaded in this exact order -->
+<!-- jQuery FIRST (everything else depends on it) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+
+<!-- jQuery plugins (depend on jQuery) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qtip2/3.0.3/jquery.qtip.min.js"></script>
+
+<!-- Cytoscape core -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.23.0/cytoscape.min.js"></script>
+
+<!-- Cytoscape extensions (depend on both jQuery and Cytoscape) -->
+<script src="https://cdn.jsdelivr.net/npm/cytoscape-qtip@2.8.0/cytoscape-qtip.min.js"></script>
+
+<!-- Bootstrap (can go anywhere but good to be before custom scripts) -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
-<script src="../script/libs/jquery-2.0.3.min.js"></script>
-<script src="../script/libs/jquery.qtip.js"></script>
-<script src="../script/libs/cytoscape.min.js"></script>
-<script src="../script/libs/cytoscape-qtip.js"></script>
+
+<!-- custom scripts LAST -->
 <script src="../script/script.js"></script>
 <script src="../script/Acceptor.js"></script>
 </body>

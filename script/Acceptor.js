@@ -66,11 +66,10 @@ let ACCEPTOR = new Acceptor();
 
 //runs a single word and prints result
 var checkWordAndPrint = function(word) {
-    let ACCEPTOR = new Acceptor();
     ACCEPTOR.refreshFromGraph()
 
     var result = ACCEPTOR.runAcceptor(word);
 
-    //console.log("Word is" + (result.accepted ? " accepted." : " not accepted."));
-    console.log(result); //allows error handling inside .runAcceptor() function
+    console.log(result);
+    return result;
 }

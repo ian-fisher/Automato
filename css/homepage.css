@@ -3,6 +3,9 @@
    Unique Elements Only
    ======================================== */
 
+/* Import unified styles */
+@import url('unified.css');
+
 /* Hero Section */
 .hero-section {
     background: linear-gradient(135deg, var(--bg-light) 0%, var(--bg-cream) 50%, white 100%);

@@ -3,6 +3,9 @@
    Unique Elements Only
    ======================================== */
 
+/* Import unified styles */
+@import url('unified.css');
+
 /* Workspace Container */
 .workspace-container {
     max-width: 1400px;
@@ -42,7 +45,7 @@
     box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
 }
 
-/* Graph Container */
+/* Graph Container - CRITICAL: Positioning fixes for Cytoscape */
 #graph {
     width: 100%;
     height: 70vh;
@@ -51,6 +54,75 @@
     border-radius: 8px;
     box-shadow: 0 4px 16px rgba(220, 38, 38, 0.1);
     background-color: white;
+    position: relative; /* CRITICAL: Required for Cytoscape positioning */
+    overflow: hidden; /* Keeps graph contained */
+}
+
+/* ========================================
+   QTIP FIXES - Ensure qtips work properly
+   ======================================== */
+
+/* Ensure qtip container has proper z-index and positioning */
+.qtip {
+    position: absolute !important;
+    z-index: 15001 !important; /* Above everything else */
+}
+
+/* Fix qtip positioning context */
+.qtip-bootstrap {
+    border-radius: 6px !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Style qtip content */
+.qtip-content {
+    padding: 10px !important;
+}
+
+.qtip-content form {
+    margin-bottom: 10px;
+}
+
+.qtip-content input[type="text"] {
+    width: 100%;
+    padding: 5px;
+    margin: 5px 0;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+}
+
+.qtip-content input[type="checkbox"] {
+    margin-right: 5px;
+}
+
+.qtip-content button {
+    margin: 5px 5px 0 0;
+    padding: 5px 10px;
+    background-color: var(--primary-red);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.qtip-content button:hover {
+    background-color: var(--primary-red-dark);
+}
+
+.qtip-content label {
+    display: inline-block;
+    margin-right: 5px;
+    font-weight: 500;
+}
+
+/* ========================================
+   CYTOSCAPE NODE/EDGE STYLING SUPPORT
+   ======================================== */
+
+/* Ensure Cytoscape canvas renders properly */
+#graph canvas {
+    display: block;
 }
 
 /* Responsive Design */
