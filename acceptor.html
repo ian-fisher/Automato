@@ -22,17 +22,25 @@
   <hr>
 
   <!-- Input word -->
-  <form id="inputWordForm">
+  <form class="form-inline" id="inputWordForm">
     <div class="form-group">
-      <label id="inputWordLabel" for="inputWord">Input word</label>
+      <label id="inputWordLabel" for="inputWord">Input word: </label>
       <input type="text" class="form-control" id="inputWord" aria-describedby="inputWordDescription" placeholder="e.g. abacaba">
-      <small id="inputWordDescription" class="form-text text-muted">Enter the input word for the acceptor.</small>
     </div>
-    <button
+    <div class="form-group">
+      <button
     type="submit" class="btn btn-secondary"
     onclick="inputWordSubmitHandler(event);"
     >Run acceptor</button>
-  </form> 
+    </div>
+  </form>
+  <div class="card" id="inputWordResultContainer">
+    <ul class="list-group list-group-flush">
+      <li class="list-group-item">Input: <span id="inputWordResultWord" class="badge badge-light"></span></li>
+      <li class="list-group-item">Result: <span id="inputWordResultAccepted" class="badge"></span></li>
+      <li class="list-group-item">Details: <span id="inputWordResultException" class="badge badge-warning"></span></li>
+    </ul>
+  </div>
   <hr>
 
   <!-- Graph controls -->

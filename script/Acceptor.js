@@ -70,5 +70,5 @@ var checkWordAndPrint = function(word) {
 
     var result = ACCEPTOR.runAcceptor(word);
 
-    console.log("Word is" + (result.accepted ? " accepted." : " not accepted."));
+    return result;
 }
