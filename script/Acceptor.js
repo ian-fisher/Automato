@@ -18,6 +18,16 @@ class Acceptor {
     //works through a word and returns whether the path is accepted or not NO ERROR HANDLING
     runAcceptor(word){
         let currentState = this.startState;
+        var edges =  cy.json().elements.edges;
+        var nodes = cy.json().elements.nodes;
+
+        if(this.startState === null) {
+            return {"accepted" : false, "exception" : "startState not defined"};
+        }
+
+        if(this.acceptedStates.length === 0) {
+            return {"accepted" : false, "exception" : "acceptedStates not defined"};
+        }
 
         for (let position = 0; position < word.length; position++){
             const symbolInPosition = word[position]
