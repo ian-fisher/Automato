@@ -34,7 +34,7 @@ class Acceptor {
             const matchingTransition = this.transitions.find((f) => f.from === currentState && f.symbol === symbolInPosition);
 
             if (!matchingTransition) {
-                return {"accepted" : false, "exception" : "transition at state " + currentState + " is missing for symbol " + symbolInPosition + " ."};
+                return {"accepted" : false, "exception" : "transition at state " + nodes[currentState].data.label + " is missing for symbol " + symbolInPosition };
             }
             currentState = matchingTransition.to;
         }

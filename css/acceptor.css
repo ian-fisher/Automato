@@ -131,9 +131,9 @@
         padding: 0 1rem 1rem 1rem;
         margin: 1rem auto;
     }
+}
 
-    #graph {
+#graph {
         height: 60vh;
         min-height: 400px;
     }
-}
