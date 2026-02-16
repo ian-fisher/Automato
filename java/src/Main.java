@@ -14,6 +14,7 @@ import java.util.Map;
 
 public class  Main {
 
+
     public static Connection connect() throws Exception {
         String url = "jdbc:mysql://w01ba120.kasserver.com:3306/d0430a00";
         String user = "d0430a00";
@@ -67,6 +68,30 @@ public class  Main {
         String username = params.get("username");
         String password = params.get("password");
 
+        String sql = "SELECT * FROM Users WHERE Username = ? AND Password = ?";
+        boolean loginSuccess = false;
+
+
+        try (Connection con = connect();
+        PreparedStatement ps = con.prepareStatement(sql)) {
+
+
+        ps.setString(1, username);
+        ps.setString(2, password);
+
+
+        ResultSet rs = ps.executeQuery();
+
+
+        if (rs.next()) {
+        loginSuccess = true;
+        }
+
+
+        } catch (Exception e) {
+        e.printStackTrace();
+        }
+
         // Daten sind jetzt verfügbar
         System.out.println("Login abgeschickt!");
         System.out.println("Username: " + username);
@@ -75,7 +100,16 @@ public class  Main {
         // Optional: Verbindung zur Datenbank prüfen
         // boolean success = checkUserInDB(username, password);
 
-        String response = "Login erhalten"; // oder "Login erfolgreich" / "Login fehlgeschlagen"
+        String response;
+
+
+        if (loginSuccess) {
+            response = "Login successful";
+            System.out.println("Login successful");
+        } else {
+            response = "Login failed";
+            System.out.println("Login failed");
+        }
         exchange.sendResponseHeaders(200, response.length());
         OutputStream os = exchange.getResponseBody();
         os.write(response.getBytes());
@@ -94,24 +128,14 @@ public class  Main {
             e.printStackTrace();
         }
 
-        String sql = "DO 0;";               // Change to your desired SQL command, Example: INSERT INTO Users (Username, Password) VALUES ('test1', 'password123')
-        try (Connection con = connect(); PreparedStatement ps = con.prepareStatement(sql)) {
+        String sql1 = "DO 0;";               // Change to your desired SQL command, Example: INSERT INTO Users (Username, Password) VALUES ('test1', 'password123')
+        try (Connection con = connect(); PreparedStatement ps = con.prepareStatement(sql1)) {
             ps.executeUpdate();
         }
         catch (Exception e) {
             e.printStackTrace();
         }
 
-        try (Connection con = connect(); PreparedStatement ps = con.prepareStatement("SELECT * FROM Users"); ResultSet rs = ps.executeQuery()) {
-            while (rs.next()) {
-                String username = rs.getString("Username");
-                String password = rs.getString("Password");
-                System.out.println("Username: " + username + ", Password: " + password);
-            }
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
         
     }
     private static Map<String, String> parseFormData(String body) throws UnsupportedEncodingException {
