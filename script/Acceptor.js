@@ -73,50 +73,6 @@ var checkWordAndPrint = function(word) {
     console.log("Word is" + (result.accepted ? " accepted." : " not accepted."));
 }
 
-var ACCEPTOR_sbs = new Acceptor();
-
-var currentStateSBS
-
-var positionSBS
-
-var wordSBS
-
-function colourNodeVisited(i) {
-    var node = cy.$id(i);
-    node.style('background-color', nodeVisitedColor);
-}
-
-function colourNodeNormal(i) {
-    var node = cy.$id(i);
-    node.style('background-color', nodeBasicColor);
-}
-
-var startSBSSimulation = function(word) {
-    ACCEPTOR_sbs.refreshFromGraph();
-    currentStateSBS = ACCEPTOR_sbs.startState;
-    positionSBS = 0;
-    wordSBS = word;
-    colourNodeVisited(currentStateSBS);
-}
-
-var nextNodeSBS = function() {
-    const symbolInPosition = wordSBS[positionSBS]
-    const matchingTransition = ACCEPTOR_sbs.transitions.find((f) => f.from === currentStateSBS && f.symbol === symbolInPosition);
-    if (!matchingTransition) {
-        return {"accepted" : false, "exception" : "transition at state " + currentStateSBS + " is missing for " + " symbol" + symbolInPosition + " ."};
-    }
-    colourNodeNormal(currentStateSBS);
-    currentStateSBS = matchingTransition.to;
-    positionSBS++;
-    if (positionSBS === wordSBS.length) {
-        if (ACCEPTOR_sbs.acceptedStates.includes(currentStateSBS)) {
-            return {"accepted" : true}
-        }
-    }
-    colourNodeVisited(currentStateSBS);
-    return {"accepted" : false}
-}
-
 
 
 
