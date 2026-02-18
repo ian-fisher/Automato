@@ -1,0 +1,187 @@
+/* ========================================
+   AUTOMATO - About Us Page
+   Unique Elements Only
+   ======================================== */
+
+/* Import unified styles */
+@import url('unified.css');
+
+/* Page Background */
+body {
+    background: linear-gradient(135deg, #fff5f5 0%, #fffaf0 100%);
+    min-height: 100vh;
+}
+
+/* Header Section */
+header {
+    background: linear-gradient(135deg, var(--primary-red) 0%, var(--primary-red-dark) 100%);
+    color: white;
+    text-align: center;
+    padding: 4rem 2rem;
+    margin: 3rem auto;
+    max-width: 1200px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(220, 38, 38, 0.3);
+}
+
+header h1 {
+    font-size: 2.5rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+header p {
+    font-size: 1.3rem;
+    opacity: 0.95;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* Main Content */
+main {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 2rem 2rem 4rem;
+}
+
+/* About Page Card Styling */
+main .card {
+    padding: 2.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 16px rgba(220, 38, 38, 0.1);
+}
+
+main .card h2 {
+    color: var(--primary-red);
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 3px solid var(--primary-red-light);
+}
+
+main .card p {
+    color: var(--text-dark);
+    font-size: 1.1rem;
+    line-height: 1.8;
+}
+
+main .card p + p {
+    margin-top: 1rem;
+}
+
+/* Creators List */
+.creators-list {
+    background: linear-gradient(135deg, var(--bg-light) 0%, var(--bg-cream) 100%);
+    padding: 1.5rem;
+    border-radius: 8px;
+    border-left: 4px solid var(--primary-red);
+    font-size: 1.1rem;
+    color: var(--text-dark);
+    font-weight: 500;
+    line-height: 1.8;
+}
+
+/* Project Details Table */
+.details-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-top: 1.5rem;
+}
+
+.details-table tr {
+    border-bottom: 1px solid var(--border-color);
+}
+
+.details-table tr:last-child {
+    border-bottom: none;
+}
+
+.details-table td {
+    padding: 1.25rem 1rem;
+}
+
+.details-table td:first-child {
+    color: var(--primary-red);
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 700;
+    width: 30%;
+    vertical-align: top;
+}
+
+.details-table td:last-child {
+    color: var(--text-dark);
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+/* Footer */
+footer {
+    background: linear-gradient(135deg, var(--primary-red-dark) 0%, var(--primary-red) 100%);
+    color: white;
+    text-align: center;
+    padding: 2rem;
+    margin-top: 4rem;
+    font-size: 0.95rem;
+    box-shadow: 0 -4px 20px rgba(220, 38, 38, 0.2);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    header h1 {
+        font-size: 2rem;
+    }
+
+    header p {
+        font-size: 1.1rem;
+    }
+
+    main .card {
+        padding: 1.5rem;
+    }
+
+    main .card h2 {
+        font-size: 1.5rem;
+    }
+
+    main {
+        padding: 0 1rem 2rem;
+    }
+
+    .details-table td:first-child {
+        width: 40%;
+    }
+}
+
+@media (max-width: 480px) {
+    header {
+        padding: 3rem 1rem;
+    }
+
+    main .card {
+        padding: 1.25rem;
+    }
+
+    .details-table {
+        font-size: 0.9rem;
+    }
+
+    .details-table td {
+        padding: 1rem 0.5rem;
+        display: block;
+        width: 100% !important;
+    }
+
+    .details-table td:first-child {
+        padding-bottom: 0.25rem;
+        font-size: 0.85rem;
+    }
+
+    .details-table td:last-child {
+        padding-top: 0.25rem;
+        font-size: 1rem;
+    }
+}
