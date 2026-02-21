@@ -13,11 +13,12 @@
     <link rel="stylesheet" type="text/css" href="http://cdnjs.cloudflare.com/ajax/libs/qtip2/2.2.0/jquery.qtip.css">
 
     <!-- Custom CSS -->
-    <link rel="stylesheet" type="text/css" href="../css/acceptor.css">
+    <link rel="stylesheet" type="text/css" href="../css/transducer.css">
     <link rel="icon" type="image/png" href="../images/logo.png">
 </head>
 
 <body>
+
 <div class="secondary-header border-bottom py-3 bg-light-subtle">
     <div class="container">
         <div class="d-flex flex-wrap align-items-center justify-content-between py-3">
@@ -31,7 +32,7 @@
 
             <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
                 <li><a href="../pages/acceptor.html" class="nav-link px-3">Acceptor</a></li>
-                <li><a href="transducer.html" class="nav-link px-3">Transducer</a></li>
+                <li><a href="../pages/transducer.html" class="nav-link px-3">Transducer</a></li>
                 <li><a href="../pages/aboutUs.html" class="nav-link px-3">About us</a></li>
             </ul>
 
@@ -69,7 +70,7 @@
     </div>
 </div>
 
-  <!-- Graph controls -->
+<!-- Graph controls -->
 <div class="workspace-container">
     <p>Here, you can build and test your own acceptor.</p>
 
@@ -84,14 +85,14 @@
             <button
                     type="submit" class="btn btn-secondary"
                     onclick="inputWordSubmitHandler(event);"
-            >Run Acceptor</button>
+            >Run Transducer</button>
         </div>
     </form>
 
     <div class="card" id="inputWordResultContainer">
         <ul class="list-group list-group-flush">
             <li class="list-group-item">Input: <span id="inputWordResultWord" class="badge badge-light"></span></li>
-            <li class="list-group-item">Result: <span id="inputWordResultAccepted" class="badge"></span></li>
+            <li class="list-group-item">Output: <span id="inputWordResultAccepted" class="badge"></span></li>
             <li class="list-group-item">Details: <span id="inputWordResultException" class="badge badge-warning"></span></li>
         </ul>
     </div>
@@ -102,11 +103,24 @@
         <button onclick="exportPNG();">Export PNG</button>
     </div>
 
-    <div id="graph">
-        <!-- Graph will be rendered here -->
+    <div class="graph-table-row">
+        <div id="graph">
+            <!-- Graph will be rendered here -->
+        </div>
+
+        <table class="table">
+            <thead id="transducerTableHead">
+            <tr>
+                <th>State</th>
+                <th>Symbol</th>
+                <th>Output</th>
+            </tr>
+            </thead>
+            <tbody id="transducerTableBody">
+            </tbody>
+        </table>
     </div>
 </div>
-
 </body>
 
 <!-- CRITICAL: Scripts must be loaded in this exact order -->
@@ -131,6 +145,6 @@
 <script src="../script/libs/cytoscape.min.js"></script>
 <script src="../script/libs/cytoscape-qtip.js"></script>
 <script src="../script/script.js"></script>
-<script src="../script/Acceptor.js"></script>
-<script src="../script/wordinput.js"></script>
+<script src="../script/transducer.js"></script>
+
 </html>
