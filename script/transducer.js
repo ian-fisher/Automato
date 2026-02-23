@@ -20,7 +20,7 @@ class Transducer {
 
         let currentState = this.startState;
         let output = [];
-        var nodes = cy.json().elements.nodes;
+        var nodes = cyTransducer.json().elements.nodes;
 
         for (let i = 0; i < word.length; i++) {
             const symbol = word[i];
@@ -42,8 +42,8 @@ class Transducer {
         this.transitions = [];
         this.startState = null;
 
-        var edges = cy.json().elements.edges;
-        var nodes = cy.json().elements.nodes;
+        var edges = cyTransducer.json().elements.edges;
+        var nodes = cyTransducer.json().elements.nodes;
 
         for (let n = 0; n < nodes.length; n++) {
             if (nodes[n].data.isInitial === true) {
@@ -77,8 +77,8 @@ class Transducer {
 let TRANSDUCER = new Transducer();
 
 function refreshTransducerTable() {
-    var edges = cy.json().elements.edges || [];
-    var nodes = cy.json().elements.nodes || [];
+    var edges = cyTransducer.json().elements.edges || [];
+    var nodes = cyTransducer.json().elements.nodes || [];
 
     var nodeLabel = {};
     nodes.forEach(n => { nodeLabel[n.data.id] = n.data.label || n.data.id; });
@@ -98,7 +98,8 @@ function refreshTransducerTable() {
         var tr = document.createElement("tr");
         tr.innerHTML = `
             <td>${from} → ${to}</td>
-            <td>${inputSym || "<em>ε</em>"}</td>
+            <td><input type="text" class="form-control" value="${inputSym}" placeholder="ε" maxlength="1"
+                onchange="editEdgeInput('${e.data.id}', this.value)"></td>
             <td><input type="text" class="form-control" value="${outputSym}" placeholder="ε"
                 onchange="editEdgeOutput('${e.data.id}', this.value)"></td>
         `;
@@ -143,8 +144,16 @@ function inputWordSubmitHandler(event) {
     }
 }
 
+function editEdgeInput(edgeId, newInput) {
+    var edge = cyTransducer.edges(`[id = "${edgeId}"]`);
+    var currentLabel = edge.data('label') || "";
+    var outputSym = currentLabel.includes("/") ? currentLabel.split("/")[1] : "";
+    edge.data('label', newInput + "/" + outputSym);
+    saveGraph();
+}
+
 function editEdgeOutput(edgeId, newOutput) {
-    var edge = cy.json().elements.edge(edgeId);
+    var edge = cyTransducer.edges(`[id = "${edgeId}"]`);
     var currentLabel = edge.data('label') || "";
     var inputSym = currentLabel.includes("/") ? currentLabel.split("/")[0] : currentLabel;
     edge.data('label', inputSym + "/" + newOutput);
