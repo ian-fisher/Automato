@@ -12,6 +12,8 @@ import java.sql.ResultSet;
 import java.util.HashMap;
 import java.util.Map;
 
+// "java": "cd $dir && javac -cp lib/mysql-connector-j-9.6.0.jar $fileName && java -cp .;lib/mysql-connector-j-9.6.0.jar $fileNameWithoutExt",
+
 public class  Main {
 
     // connects to the database using the provided credentials
@@ -97,19 +99,22 @@ public class  Main {
 
         // was the login succesful?
         String response;
+
         if (loginSuccess) {
-            response = "Login successful";
-            System.out.println("Login successful");
+
+            exchange.getResponseHeaders().add("Location", "/pages/homepage.html");
+            exchange.sendResponseHeaders(302, -1);
+            exchange.close();
+
         } else {
-            response = "Login failed";
-            System.out.println("Login failed");
+
+            exchange.getResponseHeaders().add("Location", "/login_failed.html");
+            exchange.sendResponseHeaders(302, -1);
+            exchange.close();
         }
+
+        exchange.close();
         
-        // respond to the client wether the login was successful or not
-        exchange.sendResponseHeaders(200, response.length());
-        OutputStream os = exchange.getResponseBody();
-        os.write(response.getBytes());
-        os.close();
         
     }
 });
