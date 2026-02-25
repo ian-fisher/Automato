@@ -35,7 +35,7 @@ var nextNodeSBS = function() {
     const symbolInPosition = wordSBS[positionSBS]
     const matchingTransition = ACCEPTOR_sbs.transitions.find((f) => f.from === currentStateSBS && f.symbol === symbolInPosition);
     if (!matchingTransition) {
-        return {"rejected" : false, "exception" : "transition at state " + currentStateSBS + " is missing for " + " symbol" + symbolInPosition + " ."};
+        return {"rejected" : false, "exception" : "transition at state " + currentStateSBS + " is missing for " + " symbol " + symbolInPosition + "."};
     }
     colourNodeNormal(currentStateSBS);
     currentStateSBS = matchingTransition.to;
