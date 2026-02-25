@@ -1,5 +1,3 @@
-// projects.js
-
 class Project {
     constructor(id, name, icon) {
         this.id = id;
