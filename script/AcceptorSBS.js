@@ -33,7 +33,10 @@ var startSBSSimulation = function(word) {
 
 var nextNodeSBS = function() {
     const symbolInPosition = wordSBS[positionSBS]
-    const matchingTransition = ACCEPTOR_sbs.transitions.find((f) => f.from === currentStateSBS && f.symbol === symbolInPosition);
+    const matchingTransition = ACCEPTOR_sbs.transitions.find(
+        (f) => f.from === currentStateSBS && f.symbols.includes(symbolInPosition)
+    );
+
     if (!matchingTransition) {
         return {"rejected" : false, "exception" : "transition at state " + currentStateSBS + " is missing for " + " symbol " + symbolInPosition + "."};
     }
