@@ -138,12 +138,12 @@ function addQtipEdge(edge) {
   edge.qtip({
   content: function(){
     return `
-    <form onkeydown="if event.key == 'Enter' {edgeFormSubmit(event);}">
+    <form onkeydown="if key == 'Enter' {edgeFormSubmit();}">
     <label for="edge_${edge.data('id')}_label_edit">Symbols:</label>
     <input id="edge_${edge.data('id')}_label_edit"
-    type="text" onchange="editEdgeLabel('${edge.data('id')}', this.value)"
-    onkeydown="if (event.key === 'Enter') { event.preventDefault(); edgeFormSubmit(${edge.data('id')}); }"
-    maxlength="1">
+        type="text" onchange="addEdgeInput('${edge.data('id')}', this.value)"
+        onkeydown="if (key === 'Enter') { preventDefault(); edgeFormSubmit(${edge.data('id')}); }"
+        maxlength="1">
     </form>
     <button onclick='removeEdge("${this.id()}")'>Remove edge</button>
     `
@@ -176,10 +176,18 @@ function editNodeLabel(i, newLabel) {
   saveGraph();
 }
 
-// edit edge label
-function editEdgeLabel(i, newLabel) {
+// add an Eingabewort to a Transition
+function addEdgeInput(i, inputWord) {
   var edge = cy.$id(i);
-  edge.data('label', newLabel);
+
+  let list = edge.data('inputList');
+  list.push(inputWord);
+  edge.data('inputs', edge.data('inputs')+1);
+  edge.data('inputList', list);
+  edge.data('label', list.toString());
+
+  console.log(window.localStorage.getItem("graph"))
+
   edge.qtip('api').destroy();
   addQtipEdge(edge);
   saveGraph();
@@ -207,7 +215,7 @@ function restoreGraph() {
     if (nodeId >= maxNodeId) {
       maxNodeId = nodeId + 1;
     }
-    node.on('free', 
+    node.on('free',
     function(evt){
       saveGraph();
     });
@@ -278,15 +286,20 @@ function addEdgeCallback(sourceId) {
 
 // add edge between two nodes
 function addEdge(sourceId, targetId) {
+  maxNodeId++;
   cy.add(
     { group: 'edges',
-      data: { 
+      data: {
         id: `e${sourceId}-${targetId}`,
+        label: "",
+        inputs: 0,
+        inputList: new Array(),
         source: sourceId,
         target: targetId,
-      }
+      },
     },
   );
+
   var edge = cy.$id(`e${sourceId}-${targetId}`);
   addQtipEdge(edge);
   saveGraph();
