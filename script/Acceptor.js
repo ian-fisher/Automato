@@ -1,8 +1,8 @@
 //sample to create a single transition node -> node
 class Transition {
-    constructor (from, symbol, to) {
+    constructor (from, symbols, to) {
         this.from = from;
-        this.symbol = symbol;
+        this.symbols = symbols;
         this.to = to;
     }
 }
@@ -29,12 +29,15 @@ class Acceptor {
             return {"accepted" : false, "exception" : "acceptedStates not defined"};
         }
 
-        for (let position = 0; position < word.length; position++){
-            const symbolInPosition = word[position]
-            const matchingTransition = this.transitions.find((f) => f.from === currentState && f.symbol === symbolInPosition);
+        for (let position = 0; position < word.length; position++) {
+            const symbolInPosition = word[position];
+
+            const matchingTransition = this.transitions.find(
+                (f) => f.from === currentState && f.symbols.includes(symbolInPosition)
+            );
 
             if (!matchingTransition) {
-                return {"accepted" : false, "exception" : "transition at state " + nodes[currentState].data.label + " is missing for symbol " + symbolInPosition };
+                return {"accepted": false, "exception": "transition at state " + currentState + " is missing for symbol " + symbolInPosition};
             }
             currentState = matchingTransition.to;
         }
@@ -68,7 +71,7 @@ class Acceptor {
         }
 
         for (let e = 0; e < edges.length; e++){
-            this.transitions.push(new Transition(edges[e].data.source, edges[e].data.label, edges[e].data.target));
+            this.transitions.push(new Transition(edges[e].data.source, edges[e].data.inputList, edges[e].data.target));
         }
     }
 }
