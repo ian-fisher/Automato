@@ -1,5 +1,6 @@
 nodeBasicColor = '#D3D3D3';
 nodeFinalColor = '#90EE90';
+nodeVisitedColor = '#FF0000'
 edgeBasicColor = '#ccc';
 
 
