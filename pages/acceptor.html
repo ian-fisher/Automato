@@ -80,11 +80,23 @@
             <input type="text" class="form-control" id="inputWord" aria-describedby="inputWordDescription" placeholder="e.g. abacaba">
         </div>
 
-        <div class="form-group">
-            <button
-                    type="submit" class="btn btn-secondary"
+        <div class="button-container">
+        <button
+                    class="btn btn-secondary"
+                    id="runAcceptorButton"
                     onclick="inputWordSubmitHandler(event);"
-            >Run Acceptor</button>
+            >Run acceptor</button>
+            <button
+                    class="btn btn-secondary"
+                    id="runSimulationButton"
+                    onclick="runSimulation(event);"
+            >Run simulation</button>
+            <button
+                    class="btn btn-secondary"
+                    id="nextStepButton"
+                    onclick="nextStep(event);"
+                    disabled
+            >Next ▷</button>
         </div>
     </form>
 
@@ -133,4 +145,6 @@
 <script src="../script/script.js"></script>
 <script src="../script/Acceptor.js"></script>
 <script src="../script/wordinput.js"></script>
+<script src="../script/simulation.js"></script>
+<script src="../script/AcceptorSBS.js"></script>
 </html>
