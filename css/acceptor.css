@@ -233,11 +233,6 @@
         margin: 1rem auto;
     }
 
-    #graph {
-        height: 60vh;
-        min-height: 400px;
-    }
-
     #inputWordForm {
         flex-direction: column;
         align-items: stretch;
@@ -247,3 +242,7 @@
         min-width: 100%;
     }
 }
+#graph {
+        height: 55vh;
+        min-height: 400px;
+    }

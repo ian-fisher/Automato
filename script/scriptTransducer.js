@@ -3,13 +3,13 @@ nodeFinalColor = '#90EE90';
 edgeBasicColor = '#ccc';
 
 
-var cy = cytoscape({
+var cyTransducer = cytoscape({
 
   // container to render the graph in
   container: document.getElementById('graph'),
 
   // the stylesheet for the graph
-  style: [ 
+  style: [
     {
       selector: 'node',
       style: {
@@ -52,19 +52,19 @@ function getRandom(min, max) {
 // add node
 function addNode() {
   var id = maxNodeId++;
-  var node = cy.add(
+  var node = cyTransducer.add(
     { group: 'nodes',
       position: {
-        x: getRandom(0.3, 0.7) * cy.width(),
-        y: getRandom(0.3, 0.7) * cy.height(),
+        x: getRandom(0.3, 0.7) * cyTransducer.width(),
+        y: getRandom(0.3, 0.7) * cyTransducer.height(),
       },
-      data: { 
+      data: {
         id: id,
         label: `n${id}`
       }
     },
   );
-  node.on('free', 
+  node.on('free',
     function(evt){
       saveGraph();
     });
@@ -74,9 +74,9 @@ function addNode() {
 
 // remove node
 function removeNode(i) {
-  node = cy.$id(i);
+  node = cyTransducer.$id(i);
   node.qtip('api').destroy();
-  cy.remove(
+  cyTransducer.remove(
     node
   );
   saveGraph();
@@ -87,9 +87,9 @@ function removeNode(i) {
 
 // remove edge
 function removeEdge(i) {
-  edge = cy.$id(i);
+  edge = cyTransducer.$id(i);
   edge.qtip('api').destroy();
-  cy.remove(
+  cyTransducer.remove(
     edge
   );
   saveGraph();
@@ -110,10 +110,6 @@ function addQtip(node) {
     ${node.data('isInitial') ? 'checked' : ''}
     onchange="nodeInitialCallback('${node.data('id')}')">
     <br>
-    <label for="is_final_${node.data('id')}">Is Final:</label>
-    <input type="checkbox" id="is_final_${node.data('id')}"
-    ${node.data('isFinal') ? 'checked' : ''}
-    onchange="nodeFinalCallback('${node.data('id')}')">
     </form>
     <button onclick='removeNode("${this.id()}")'>Remove node</button>
     <button onclick='addEdgeCallback("${this.id()}")'>Add edge</button>
@@ -138,13 +134,6 @@ function addQtipEdge(edge) {
   edge.qtip({
   content: function(){
     return `
-    <form onkeydown="if event.key == 'Enter' {edgeFormSubmit(event);}">
-    <label for="edge_${edge.data('id')}_label_edit">Symbols:</label>
-    <input id="edge_${edge.data('id')}_label_edit"
-    type="text" onchange="editEdgeLabel('${edge.data('id')}', this.value)"
-    onkeydown="if (event.key === 'Enter') { event.preventDefault(); edgeFormSubmit(${edge.data('id')}); }"
-    maxlength="1">
-    </form>
     <button onclick='removeEdge("${this.id()}")'>Remove edge</button>
     `
   },
@@ -169,36 +158,24 @@ function edgeFormSubmit(event) {
 
 // edit node label
 function editNodeLabel(i, newLabel) {
-  var node = cy.$id(i);
+  var node = cyTransducer.$id(i);
   node.data('label', newLabel);
   node.qtip('api').destroy();
   addQtip(node);
   saveGraph();
 }
 
-// edit edge label
-function editEdgeLabel(i, newLabel) {
-  var edge = cy.$id(i);
-  edge.data('label', newLabel);
-  edge.qtip('api').destroy();
-  addQtipEdge(edge);
-  saveGraph();
-}
-
 // save graph to local storage
 function saveGraph() {
-  window.localStorage.setItem("graph", JSON.stringify( cy.json() ));
+  window.localStorage.setItem("transducer", JSON.stringify( cyTransducer.json() ));
 }
 
 // restore graph from local storage
 function restoreGraph() {
-  cy.elements().remove();
-  console.log(window.localStorage.getItem("graph"))
-  cy.json({ elements: JSON.parse( window.localStorage.getItem("graph") ).elements }).layout({ name: 'preset' }).run();
-  for (const node of cy.nodes()) {
-    if (node.data('isFinal')) {
-      node.style('background-color', nodeFinalColor);
-    }
+  cyTransducer.elements().remove();
+  console.log(window.localStorage.getItem("transducer"))
+  cyTransducer.json({ elements: JSON.parse( window.localStorage.getItem("transducer") ).elements }).layout({ name: 'preset' }).run();
+  for (const node of cyTransducer.nodes()) {
     if (node.data('isInitial')) {
       node.style('shape', 'round-triangle');
     }
@@ -207,12 +184,12 @@ function restoreGraph() {
     if (nodeId >= maxNodeId) {
       maxNodeId = nodeId + 1;
     }
-    node.on('free', 
+    node.on('free',
     function(evt){
       saveGraph();
     });
   }
-  for (const edge of cy.edges()) {
+  for (const edge of cyTransducer.edges()) {
     addQtipEdge(edge);
   }
 }
@@ -220,7 +197,7 @@ function restoreGraph() {
 
 // remove all nodes and edges
 function clearGraph() {
-  cy.elements().remove();
+  cyTransducer.elements().remove();
   maxNodeId = 0;
   window.localStorage.removeItem("graph");
   window.localStorage.removeItem("initialNodeId");
@@ -228,7 +205,7 @@ function clearGraph() {
 
 // on clicking "is final" checkbox
 function nodeFinalCallback(i) {
-  var node = cy.$id(i);
+  var node = cyTransducer.$id(i);
   var isFinal = node.data('isFinal') || false;
   if (isFinal) {
     node.data('isFinal', false);
@@ -245,7 +222,7 @@ function nodeFinalCallback(i) {
 
 // on clicking "is initial" checkbox
 function nodeInitialCallback(i) {
-  var node = cy.$id(i);
+  var node = cyTransducer.$id(i);
   var isInitial = node.data('isInitial') || false;
   if (isInitial) {
     node.data('isInitial', false);
@@ -255,7 +232,7 @@ function nodeInitialCallback(i) {
   else {
     if (window.localStorage.getItem("initialNodeId") != null) {
       console.log(window.localStorage.getItem("initialNodeId"))
-      var initialNode = cy.$id(window.localStorage.getItem("initialNodeId"));
+      var initialNode = cyTransducer.$id(window.localStorage.getItem("initialNodeId"));
       initialNode.data('isInitial', false);
       initialNode.style('shape', 'ellipse');
       initialNode.qtip('api').destroy();
@@ -278,16 +255,16 @@ function addEdgeCallback(sourceId) {
 
 // add edge between two nodes
 function addEdge(sourceId, targetId) {
-  cy.add(
+  cyTransducer.add(
     { group: 'edges',
-      data: { 
+      data: {
         id: `e${sourceId}-${targetId}`,
         source: sourceId,
         target: targetId,
       }
     },
   );
-  var edge = cy.$id(`e${sourceId}-${targetId}`);
+  var edge = cyTransducer.$id(`e${sourceId}-${targetId}`);
   addQtipEdge(edge);
   saveGraph();
 }
@@ -295,7 +272,7 @@ function addEdge(sourceId, targetId) {
 // callback: tap on node
 // if currently adding edge, add edge
 // else, show qtip
-cy.on('tap', 'node', function(evt){
+cyTransducer.on('tap', 'node', function(evt){
   var node = evt.target;
   if (window.currentAddingEdgeSource != null) {
     addEdge(window.currentAddingEdgeSource, node.data('id'));
@@ -306,15 +283,15 @@ cy.on('tap', 'node', function(evt){
 });
 
 // clicking on background cancels edge adding
-cy.on('tap', function (evt) {
-  if (evt.target === cy) {
+cyTransducer.on('tap', function (evt) {
+  if (evt.target === cyTransducer) {
     window.currentAddingEdgeSource = null;
   }
 });
 
 // export graph as png
 function exportPNG() {
-  var png64 = cy.png({scale: 1, full: true});
+  var png64 = cyTransducer.png({scale: 1, full: true});
   const a = document.createElement('a');
   a.href = png64;
   a.download = 'graph.png';
