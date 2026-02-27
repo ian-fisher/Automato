@@ -1,6 +1,5 @@
 nodeBasicColor = '#D3D3D3';
-nodeFinalColor = '#90EE90';
-nodeVisitedColor = '#FF0000'
+nodeVisitedColor = '#00ff04'
 edgeBasicColor = '#ccc';
 
 
@@ -16,7 +15,7 @@ var cy = cytoscape({
       style: {
         'background-color': nodeBasicColor,
         'label': 'data(label)',
-        'text-wrap':'wrap'
+        'text-wrap':'wrap',
       }
     },
 
@@ -206,7 +205,9 @@ function restoreGraph() {
   cy.json({ elements: JSON.parse( window.localStorage.getItem("graph") ).elements }).layout({ name: 'preset' }).run();
   for (const node of cy.nodes()) {
     if (node.data('isFinal')) {
-      node.style('background-color', nodeFinalColor);
+      node.style('border-width', 3);
+      node.style('border-color', '#000000');
+      node.style('border-style','double');
     }
     if (node.data('isInitial')) {
       node.style('shape', 'round-triangle');
@@ -241,11 +242,13 @@ function nodeFinalCallback(i) {
   var isFinal = node.data('isFinal') || false;
   if (isFinal) {
     node.data('isFinal', false);
-    node.style('background-color', nodeBasicColor);
+    node.style('border-width', 0);
   }
   else {
     node.data('isFinal', true);
-    node.style('background-color', nodeFinalColor);
+    node.style('border-width', 3);
+    node.style('border-color', '#000000');
+    node.style('border-style','double');
   }
   node.qtip('api').destroy();
   addQtip(node);
