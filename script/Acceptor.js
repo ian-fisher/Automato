@@ -17,6 +17,7 @@ class Acceptor {
 
     //works through a word and returns whether the path is accepted or not NO ERROR HANDLING
     runAcceptor(word){
+        turnOff();
         let currentState = this.startState;
         var edges =  cy.json().elements.edges;
         var nodes = cy.json().elements.nodes;

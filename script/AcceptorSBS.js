@@ -19,6 +19,9 @@ function colourNodeNormal(i) {
 var startSBSSimulation = function(word) {
     restoreGraph();
     ACCEPTOR_sbs.refreshFromGraph();
+    if (currentStateSBS) {
+        colourNodeNormal(currentStateSBS);
+    }
     currentStateSBS = ACCEPTOR_sbs.startState;
     positionSBS = 0;
     wordSBS = word;
@@ -46,4 +49,10 @@ var nextNodeSBS = function() {
         }
     }
     return {};
+}
+
+var turnOff = function () {
+    if (currentStateSBS) {
+        colourNodeNormal(currentStateSBS);
+    }
 }
