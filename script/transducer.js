@@ -14,6 +14,7 @@ class Transducer {
     }
 
     runTransducer(word) {
+        turnOff_t();
         if (this.startState === null) {
             return {output: null, exception: "Start state not defined"};
         }

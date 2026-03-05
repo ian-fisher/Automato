@@ -16,6 +16,12 @@ function colourNodeNormal(i) {
     node.style('background-color', nodeBasicColor);
 }
 
+function restoreAllNodeColors_t() {
+    cyTransducer.nodes().forEach(function(node) {
+        node.style('background-color', nodeBasicColor);
+    });
+}
+
 var startSBSSimulation = function(word) {
     restoreGraph();
     ACCEPTOR_sbs.refreshFromGraph();
