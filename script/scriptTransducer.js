@@ -2,13 +2,18 @@ nodeBasicColor = '#D3D3D3';
 nodeFinalColor = '#90EE90';
 edgeBasicColor = '#ccc';
 
+// Projekt nur verwenden wenn der Typ passt — ID bleibt im localStorage erhalten
+const _typeMatches = !localStorage.getItem('currentProjectType') || localStorage.getItem('currentProjectType') === 'transducer';
+
+// Projekt-spezifischer Key — jedes Projekt hat seinen eigenen Eintrag im localStorage
+const PROJECT_ID = _typeMatches ? localStorage.getItem('currentProjectID') : null;
+const GRAPH_KEY = PROJECT_ID ? `transducer_${PROJECT_ID}` : 'transducer';
+const INITIAL_NODE_KEY = PROJECT_ID ? `initialNodeId_${PROJECT_ID}` : 'initialNodeId';
 
 var cyTransducer = cytoscape({
 
-  // container to render the graph in
   container: document.getElementById('graph'),
 
-  // the stylesheet for the graph
   style: [
     {
       selector: 'node',
@@ -18,7 +23,6 @@ var cyTransducer = cytoscape({
         'text-wrap':'wrap'
       }
     },
-
     {
       selector: 'edge',
       style: {
@@ -32,16 +36,12 @@ var cyTransducer = cytoscape({
     }
   ],
 
-  layout: {
-    name: 'grid',
-    rows: 1
-  }
+  layout: { name: 'grid', rows: 1 }
 
 });
 
 var maxNodeId = 0;
 
-// can use reference to eles later
 restoreGraph();
 
 
@@ -49,7 +49,6 @@ function getRandom(min, max) {
   return Math.random() * (max - min) + min;
 }
 
-// add node
 function addNode() {
   var id = maxNodeId++;
   var node = cyTransducer.add(
@@ -58,44 +57,31 @@ function addNode() {
         x: getRandom(0.3, 0.7) * cyTransducer.width(),
         y: getRandom(0.3, 0.7) * cyTransducer.height(),
       },
-      data: {
-        id: id,
-        label: `n${id}`
-      }
+      data: { id: id, label: `n${id}` }
     },
   );
-  node.on('free',
-    function(evt){
-      saveGraph();
-    });
+  node.on('free', function(evt){ saveGraph(); });
   addQtip(node);
   saveGraph();
 }
 
-// remove node
 function removeNode(i) {
   node = cyTransducer.$id(i);
   node.qtip('api').destroy();
-  cyTransducer.remove(
-    node
-  );
+  cyTransducer.remove(node);
   saveGraph();
-  if (window.localStorage.getItem("initialNodeId") == i) {
-    window.localStorage.removeItem("initialNodeId");
+  if (window.localStorage.getItem(INITIAL_NODE_KEY) == i) {
+    window.localStorage.removeItem(INITIAL_NODE_KEY);
   }
 }
 
-// remove edge
 function removeEdge(i) {
   edge = cyTransducer.$id(i);
   edge.qtip('api').destroy();
-  cyTransducer.remove(
-    edge
-  );
+  cyTransducer.remove(edge);
   saveGraph();
 }
 
-// add qtip to new node
 function addQtip(node) {
   node.qtip({
   content: function(){
@@ -109,54 +95,30 @@ function addQtip(node) {
     <input type="checkbox" id="is_initial_${node.data('id')}"
     ${node.data('isInitial') ? 'checked' : ''}
     onchange="nodeInitialCallback('${node.data('id')}')">
-    <br>
     </form>
     <button onclick='removeNode("${this.id()}")'>Remove node</button>
     <button onclick='addEdgeCallback("${this.id()}")'>Add edge</button>
     `
   },
-  position: {
-    my: 'top center',
-    at: 'bottom center'
-  },
-  style: {
-    classes: 'qtip-bootstrap',
-    tip: {
-      width: 16,
-      height: 8
-    }
-  }
+  position: { my: 'top center', at: 'bottom center' },
+  style: { classes: 'qtip-bootstrap', tip: { width: 16, height: 8 } }
 });
 }
 
-// add qtip to edge
 function addQtipEdge(edge) {
   edge.qtip({
   content: function(){
-    return `
-    <button onclick='removeEdge("${this.id()}")'>Remove edge</button>
-    `
+    return `<button onclick='removeEdge("${this.id()}")'>Remove edge</button>`
   },
-  position: {
-    my: 'top center',
-    at: 'bottom center'
-  },
-  style: {
-    classes: 'qtip-bootstrap',
-    tip: {
-      width: 16,
-      height: 8
-    }
-  }
+  position: { my: 'top center', at: 'bottom center' },
+  style: { classes: 'qtip-bootstrap', tip: { width: 16, height: 8 } }
 });
 }
 
 function edgeFormSubmit(event) {
   event.preventDefault();
-  console.log(event);
 }
 
-// edit node label
 function editNodeLabel(i, newLabel) {
   var node = cyTransducer.$id(i);
   node.data('label', newLabel);
@@ -165,53 +127,84 @@ function editNodeLabel(i, newLabel) {
   saveGraph();
 }
 
-// save graph to local storage
-function saveGraph() {
-  window.localStorage.setItem("transducer", JSON.stringify( cyTransducer.json() ));
+// Speichert in localStorage UND (wenn Projekt offen) in der DB
+async function saveGraph() {
+  const graphJson = cyTransducer.json();
+  const graphJsonStr = JSON.stringify(graphJson);
+  window.localStorage.setItem(GRAPH_KEY, graphJsonStr);
+
+  if (PROJECT_ID) {
+    try {
+      await API.saveProject(PROJECT_ID, graphJson);
+    } catch(e) {
+      console.warn('Could not save to DB:', e);
+    }
+  }
 }
 
-// restore graph from local storage
-function restoreGraph() {
+// Wendet ein Cytoscape-JSON-Objekt auf den Graphen an
+function applyGraphObject(graphObj) {
   cyTransducer.elements().remove();
-  console.log(window.localStorage.getItem("transducer"))
-  cyTransducer.json({ elements: JSON.parse( window.localStorage.getItem("transducer") ).elements }).layout({ name: 'preset' }).run();
+  maxNodeId = 0;
+  try {
+    cyTransducer.json({ elements: graphObj.elements }).layout({ name: 'preset' }).run();
+  } catch(e) {
+    console.warn('Could not apply graph data:', e);
+    return;
+  }
   for (const node of cyTransducer.nodes()) {
-    if (node.data('isInitial')) {
-      node.style('shape', 'round-triangle');
-    }
+    if (node.data('isInitial')) node.style('shape', 'round-triangle');
     addQtip(node);
     var nodeId = parseInt(node.data('id'));
-    if (nodeId >= maxNodeId) {
-      maxNodeId = nodeId + 1;
-    }
-    node.on('free',
-    function(evt){
-      saveGraph();
-    });
+    if (nodeId >= maxNodeId) maxNodeId = nodeId + 1;
+    node.on('free', function(evt){ saveGraph(); });
   }
   for (const edge of cyTransducer.edges()) {
     addQtipEdge(edge);
   }
 }
 
+// Lädt Graph — DB hat Vorrang, localStorage als Fallback
+async function restoreGraph() {
+  cyTransducer.elements().remove();
 
-// remove all nodes and edges
+  if (PROJECT_ID) {
+    try {
+      const graphObj = await API.loadProject(PROJECT_ID);
+      if (graphObj && graphObj.elements) {
+        applyGraphObject(graphObj);
+        return;
+      }
+    } catch(e) {
+      console.warn('Could not load from DB, falling back to localStorage:', e);
+    }
+  }
+
+  // Fallback: localStorage
+  const saved = window.localStorage.getItem(GRAPH_KEY);
+  if (!saved) return;
+  try {
+    const graphObj = JSON.parse(saved);
+    applyGraphObject(graphObj);
+  } catch(e) {
+    console.warn('Could not restore from localStorage:', e);
+  }
+}
+
 function clearGraph() {
   cyTransducer.elements().remove();
   maxNodeId = 0;
-  window.localStorage.removeItem("graph");
-  window.localStorage.removeItem("initialNodeId");
+  window.localStorage.removeItem(GRAPH_KEY);
+  window.localStorage.removeItem(INITIAL_NODE_KEY);
 }
 
-// on clicking "is final" checkbox
 function nodeFinalCallback(i) {
   var node = cyTransducer.$id(i);
   var isFinal = node.data('isFinal') || false;
   if (isFinal) {
     node.data('isFinal', false);
     node.style('background-color', nodeBasicColor);
-  }
-  else {
+  } else {
     node.data('isFinal', true);
     node.style('background-color', nodeFinalColor);
   }
@@ -220,19 +213,16 @@ function nodeFinalCallback(i) {
   saveGraph();
 }
 
-// on clicking "is initial" checkbox
 function nodeInitialCallback(i) {
   var node = cyTransducer.$id(i);
   var isInitial = node.data('isInitial') || false;
   if (isInitial) {
     node.data('isInitial', false);
     node.style('shape', 'ellipse');
-    window.localStorage.removeItem("initialNodeId");
-  }
-  else {
-    if (window.localStorage.getItem("initialNodeId") != null) {
-      console.log(window.localStorage.getItem("initialNodeId"))
-      var initialNode = cyTransducer.$id(window.localStorage.getItem("initialNodeId"));
+    window.localStorage.removeItem(INITIAL_NODE_KEY);
+  } else {
+    if (window.localStorage.getItem(INITIAL_NODE_KEY) != null) {
+      var initialNode = cyTransducer.$id(window.localStorage.getItem(INITIAL_NODE_KEY));
       initialNode.data('isInitial', false);
       initialNode.style('shape', 'ellipse');
       initialNode.qtip('api').destroy();
@@ -240,20 +230,17 @@ function nodeInitialCallback(i) {
     }
     node.data('isInitial', true);
     node.style('shape', 'round-triangle');
-    window.localStorage.setItem("initialNodeId", i);
+    window.localStorage.setItem(INITIAL_NODE_KEY, i);
   }
   node.qtip('api').destroy();
   addQtip(node);
   saveGraph();
 }
 
-
-// on clicking "add edge" button
 function addEdgeCallback(sourceId) {
   window.currentAddingEdgeSource = sourceId;
 }
 
-// add edge between two nodes
 function addEdge(sourceId, targetId) {
   cyTransducer.add(
     { group: 'edges',
@@ -269,9 +256,6 @@ function addEdge(sourceId, targetId) {
   saveGraph();
 }
 
-// callback: tap on node
-// if currently adding edge, add edge
-// else, show qtip
 cyTransducer.on('tap', 'node', function(evt){
   var node = evt.target;
   if (window.currentAddingEdgeSource != null) {
@@ -282,14 +266,10 @@ cyTransducer.on('tap', 'node', function(evt){
   }
 });
 
-// clicking on background cancels edge adding
 cyTransducer.on('tap', function (evt) {
-  if (evt.target === cyTransducer) {
-    window.currentAddingEdgeSource = null;
-  }
+  if (evt.target === cyTransducer) window.currentAddingEdgeSource = null;
 });
 
-// export graph as png
 function exportPNG() {
   var png64 = cyTransducer.png({scale: 1, full: true});
   const a = document.createElement('a');

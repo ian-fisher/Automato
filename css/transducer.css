@@ -44,6 +44,13 @@ body {
     white-space: nowrap;
 }
 
+.button-container button:disabled {
+    background-color: #ccc;
+    border-color: #ccc;
+    cursor: not-allowed;
+    opacity: 0.65;
+}
+
 .button-container button:hover:not(:disabled) {
     background-color: var(--primary-red-dark, #b91c1c);
     border-color: var(--primary-red-dark, #b91c1c);
