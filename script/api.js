@@ -26,7 +26,7 @@ const API = {
   logout() {
     document.cookie = 'userID=; Max-Age=0; path=/';
     document.cookie = 'username=; Max-Age=0; path=/';
-    window.location.href = '/pages/login.html';
+    window.location.href = '/login.html';
   },
 
   // Projekte des eingeloggten Users laden

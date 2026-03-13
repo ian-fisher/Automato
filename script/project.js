@@ -121,9 +121,9 @@ const ProjectManager = {
         localStorage.setItem('currentProjectType', project.type);
 
         if (project.type === 'transducer') {
-            window.location.href = '/pages/transducer.html';
+            window.location.href = '/transducer.html';
         } else {
-            window.location.href = '/pages/acceptor.html';
+            window.location.href = '/acceptor.html';
         }
     },
 

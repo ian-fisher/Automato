@@ -8,8 +8,8 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/qtip2/3.0.3/jquery.qtip.min.css">
     <link rel="stylesheet" type="text/css" href="http://cdnjs.cloudflare.com/ajax/libs/qtip2/2.2.0/jquery.qtip.css">
-    <link rel="stylesheet" type="text/css" href="../css/transducer.css">
-    <link rel="icon" type="image/png" href="../images/logo.png">
+    <link rel="stylesheet" type="text/css" href="css/acceptor.css">
+    <link rel="icon" type="image/png" href="images/logo.png">
 </head>
 
 <body>
@@ -17,30 +17,30 @@
     <div class="container">
         <div class="d-flex flex-wrap align-items-center justify-content-between py-3">
 
-            <a href="/pages/homepage.html" class="d-flex align-items-center mb-2 mb-lg-0 text-decoration-none">
+            <a href="/homepage.html" class="d-flex align-items-center mb-2 mb-lg-0 text-decoration-none">
                 <div class="logo-circle">
-                    <img src="../images/logo.png" width="40" height="40" class="rounded-circle">
+                    <img src="images/logo.png" width="40" height="40" class="rounded-circle">
                 </div>
                 <span class="logo-text ms-2">Automato</span>
             </a>
 
             <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
-                <li><a href="../pages/acceptor.html" class="nav-link px-3">Acceptor</a></li>
-                <li><a href="../pages/transducer.html" class="nav-link px-3">Transducer</a></li>
-                <li><a href="../pages/aboutUs.html" class="nav-link px-3">About us</a></li>
+                <li><a href="/acceptor.html" class="nav-link px-3">Acceptor</a></li>
+                <li><a href="/transducer.html" class="nav-link px-3">Transducer</a></li>
+                <li><a href="/aboutUs.html" class="nav-link px-3">About us</a></li>
             </ul>
 
             <div class="d-flex flex-wrap gap-2">
-                <button type="button" class="btn btn-sm btn-dark" onclick="window.location.href='../pages/login.html'">Log In</button>
+                <button type="button" class="btn btn-sm btn-dark" onclick="window.location.href='/login.html'">Log In</button>
             </div>
 
             <div class="dropdown text-end">
                 <a href="#" class="d-block text-decoration-none dropdown-toggle user-avatar" data-bs-toggle="dropdown">
-                    <img src="../images/anonym_profile.png" width="40" height="40" class="rounded-circle">
+                    <img src="images/anonym_profile.png" width="40" height="40" class="rounded-circle">
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end text-small shadow">
                     <li><a class="dropdown-item" href="#"><i class="bi bi-person me-2"></i>Profile</a></li>
-                    <li><a class="dropdown-item" href="#" onclick="event.preventDefault(); API.logout(); closeCurrentProject();"><i class="bi bi-box-arrow-right me-2"></i>Log out</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="event.preventDefault(); API.logout(); closeCurrentProject()"><i class="bi bi-box-arrow-right me-2"></i>Log out</a></li>
                 </ul>
             </div>
         </div>
@@ -63,29 +63,13 @@
         </div>
         <div class="toolbar-group-right">
             <input type="text" class="form-control toolbar-input" id="inputWord" placeholder="e.g.: input word">
-            <button id="runAcceptorButton" onclick="inputWordSubmitHandler(event);">Run Transducer</button>
+            <button id="runAcceptorButton" onclick="inputWordSubmitHandler(event);">Run Acceptor</button>
             <button type="button" id="runSimulationButton" onclick="runSimulation(event);">Run simulation</button>
-            <button type="button" id="nextStepButton_t" onclick="nextStep(event);" disabled>Next ▷</button>
+            <button type="button" id="nextStepButton" onclick="nextStep(event);" disabled>Next ▷</button>
         </div>
     </div>
 
-    <div class="graph-table-row">
-        <div id="graph"></div>
-        <div class="transducer-side-panel">
-            <div class="table-container">
-                <table class="table">
-                    <thead id="transducerTableHead">
-                    <tr>
-                        <th>State</th>
-                        <th>Input</th>
-                        <th>Output</th>
-                    </tr>
-                    </thead>
-                    <tbody id="transducerTableBody"></tbody>
-                </table>
-            </div>
-        </div>
-    </div>
+    <div id="graph"></div>
 
     <div id="inputWordResultContainer">
         <div class="result-card">
@@ -93,7 +77,7 @@
             <span id="inputWordResultWord" class="badge badge-light"></span>
         </div>
         <div class="result-card">
-            <span class="result-label">Output</span>
+            <span class="result-label">Result</span>
             <span id="inputWordResultAccepted" class="badge"></span>
         </div>
         <div class="result-card">
@@ -114,7 +98,7 @@
             <div class="modal-body">
                 <div class="mb-3">
                     <label class="form-label">Project name</label>
-                    <input type="text" class="form-control" id="newProjectName" placeholder="My Transducer">
+                    <input type="text" class="form-control" id="newProjectName" placeholder="My Automaton">
                 </div>
             </div>
             <div class="modal-footer">
@@ -125,29 +109,32 @@
     </div>
 </div>
 
+</body>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qtip2/3.0.3/jquery.qtip.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.23.0/cytoscape.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/cytoscape-qtip@2.8.0/cytoscape-qtip.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
-<script src="../script/libs/jquery-2.0.3.min.js"></script>
-<script src="../script/libs/jquery.qtip.js"></script>
-<script src="../script/libs/cytoscape.min.js"></script>
-<script src="../script/libs/cytoscape-qtip.js"></script>
+<script src="script/libs/jquery-2.0.3.min.js"></script>
+<script src="script/libs/jquery.qtip.js"></script>
+<script src="script/libs/cytoscape.min.js"></script>
+<script src="script/libs/cytoscape-qtip.js"></script>
 
-<script src="../script/api.js"></script>
-<script src="../script/scriptTransducer.js"></script>
-<script src="../script/transducer.js"></script>
-<script src="../script/transducerSBS.js"></script>
-<script src="../script/simulationTransducer.js"></script>
+<script src="script/api.js"></script>
+<script src="script/script.js"></script>
+<script src="script/Acceptor.js"></script>
+<script src="script/wordinput.js"></script>
+<script src="script/simulation.js"></script>
+<script src="script/AcceptorSBS.js"></script>
 
 <script>
     const saveBtn = document.getElementById('saveProjectBtn');
     const closeBtn = document.getElementById('closeProjectBtn');
     const projectLabel = document.getElementById('projectLabel');
     const username = API.getCurrentUsername();
-    const _typeOk = !localStorage.getItem('currentProjectType') || localStorage.getItem('currentProjectType') === 'transducer';
+    const _typeOk = !localStorage.getItem('currentProjectType') || localStorage.getItem('currentProjectType') === 'acceptor';
     const pid = _typeOk ? localStorage.getItem('currentProjectID') : null;
 
     // Login-Button durch Benutzernamen ersetzen wenn angemeldet
@@ -225,19 +212,19 @@
     }
 
     async function confirmSaveAsNew() {
-        const name = document.getElementById('newProjectName').value.trim() || 'New Transducer Project';
+        const name = document.getElementById('newProjectName').value.trim() || 'New Acceptor Project';
         bootstrap.Modal.getInstance(document.getElementById('newProjectModal')).hide();
 
-        const data = await API.createProject(name, 'transducer');
+        const data = await API.createProject(name, 'acceptor');
         if (data.error) { alert('Error: ' + data.error); return; }
 
         localStorage.setItem('currentProjectID', data.id);
         localStorage.setItem('currentProjectName', name);
-        localStorage.setItem('currentProjectType', 'transducer');
+        localStorage.setItem('currentProjectType', 'acceptor');
 
         const graphJson = localStorage.getItem(GRAPH_KEY);
         if (graphJson) {
-            const newKey = `transducer_${data.id}`;
+            const newKey = `graph_${data.id}`;
             localStorage.setItem(newKey, graphJson);
             await API.saveProject(data.id, graphJson);
         }
@@ -252,5 +239,4 @@
         }, 2000);
     }
 </script>
-</body>
 </html>

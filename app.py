@@ -7,7 +7,7 @@ base_dir = os.path.dirname(__file__)
 
 @app.route("/")
 def index():
-    return send_from_directory(base_dir, "pages/homepage.html")
+    return send_from_directory(base_dir, "homepage.html")
 
 
 @app.route("/<path:filename>")
