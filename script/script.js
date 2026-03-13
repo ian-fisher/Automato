@@ -2,13 +2,18 @@ nodeBasicColor = '#D3D3D3';
 nodeVisitedColor = '#00ff04'
 edgeBasicColor = '#ccc';
 
+// Projekt nur verwenden wenn der Typ passt — ID bleibt im localStorage erhalten
+const _typeMatches = !localStorage.getItem('currentProjectType') || localStorage.getItem('currentProjectType') === 'acceptor';
+
+// Projekt-spezifischer Key — jedes Projekt hat seinen eigenen Eintrag im localStorage
+const PROJECT_ID = _typeMatches ? localStorage.getItem('currentProjectID') : null;
+const GRAPH_KEY = PROJECT_ID ? `graph_${PROJECT_ID}` : 'graph';
+const INITIAL_NODE_KEY = PROJECT_ID ? `initialNodeId_${PROJECT_ID}` : 'initialNodeId';
 
 var cy = cytoscape({
 
-  // container to render the graph in
   container: document.getElementById('graph'),
 
-  // the stylesheet for the graph
   style: [ 
     {
       selector: 'node',
@@ -18,7 +23,6 @@ var cy = cytoscape({
         'text-wrap':'wrap',
       }
     },
-
     {
       selector: 'edge',
       style: {
@@ -41,7 +45,6 @@ var cy = cytoscape({
 
 var maxNodeId = 0;
 
-// can use reference to eles later
 restoreGraph();
 
 
@@ -49,7 +52,6 @@ function getRandom(min, max) {
   return Math.random() * (max - min) + min;
 }
 
-// add node
 function addNode() {
   var id = maxNodeId++;
   var node = cy.add(
@@ -64,38 +66,28 @@ function addNode() {
       }
     },
   );
-  node.on('free', 
-    function(evt){
-      saveGraph();
-    });
+  node.on('free', function(evt){ saveGraph(); });
   addQtip(node);
   saveGraph();
 }
 
-// remove node
 function removeNode(i) {
   node = cy.$id(i);
   node.qtip('api').destroy();
-  cy.remove(
-    node
-  );
+  cy.remove(node);
   saveGraph();
-  if (window.localStorage.getItem("initialNodeId") == i) {
-    window.localStorage.removeItem("initialNodeId");
+  if (window.localStorage.getItem(INITIAL_NODE_KEY) == i) {
+    window.localStorage.removeItem(INITIAL_NODE_KEY);
   }
 }
 
-// remove edge
 function removeEdge(i) {
   edge = cy.$id(i);
   edge.qtip('api').destroy();
-  cy.remove(
-    edge
-  );
+  cy.remove(edge);
   saveGraph();
 }
 
-// add qtip to new node
 function addQtip(node) {
   node.qtip({
   content: function(){
@@ -119,21 +111,11 @@ function addQtip(node) {
     <button onclick='addEdgeCallback("${this.id()}")'>Add edge</button>
     `
   },
-  position: {
-    my: 'top center',
-    at: 'bottom center'
-  },
-  style: {
-    classes: 'qtip-bootstrap',
-    tip: {
-      width: 16,
-      height: 8
-    }
-  }
+  position: { my: 'top center', at: 'bottom center' },
+  style: { classes: 'qtip-bootstrap', tip: { width: 16, height: 8 } }
 });
 }
 
-// add qtip to edge
 function addQtipEdge(edge) {
   edge.qtip({
   content: function(){
@@ -148,17 +130,8 @@ function addQtipEdge(edge) {
     <button onclick='removeEdge("${this.id()}")'>Remove edge</button>
     `
   },
-  position: {
-    my: 'top center',
-    at: 'bottom center'
-  },
-  style: {
-    classes: 'qtip-bootstrap',
-    tip: {
-      width: 16,
-      height: 8
-    }
-  }
+  position: { my: 'top center', at: 'bottom center' },
+  style: { classes: 'qtip-bootstrap', tip: { width: 16, height: 8 } }
 });
 }
 
@@ -167,7 +140,6 @@ function edgeFormSubmit(event) {
   console.log(event);
 }
 
-// edit node label
 function editNodeLabel(i, newLabel) {
   var node = cy.$id(i);
   node.data('label', newLabel);
@@ -176,33 +148,43 @@ function editNodeLabel(i, newLabel) {
   saveGraph();
 }
 
-// add an Eingabewort to a Transition
 function addEdgeInput(i, inputWord) {
   var edge = cy.$id(i);
-
   let list = edge.data('inputList');
   list.push(inputWord);
   edge.data('inputs', edge.data('inputs')+1);
   edge.data('inputList', list);
   edge.data('label', list.toString());
-
-  console.log(window.localStorage.getItem("graph"))
-
   edge.qtip('api').destroy();
   addQtipEdge(edge);
   saveGraph();
 }
 
-// save graph to local storage
-function saveGraph() {
-  window.localStorage.setItem("graph", JSON.stringify( cy.json() ));
+// Speichert in localStorage UND (wenn Projekt offen) in der DB
+async function saveGraph() {
+  const graphJson = cy.json();
+  const graphJsonStr = JSON.stringify(graphJson);
+  window.localStorage.setItem(GRAPH_KEY, graphJsonStr);
+
+  if (PROJECT_ID) {
+    try {
+      await API.saveProject(PROJECT_ID, graphJson);
+    } catch(e) {
+      console.warn('Could not save to DB:', e);
+    }
+  }
 }
 
-// restore graph from local storage
-function restoreGraph() {
+// Wendet ein Cytoscape-JSON-Objekt auf den Graphen an
+function applyGraphObject(graphObj) {
   cy.elements().remove();
-  console.log(window.localStorage.getItem("graph"))
-  cy.json({ elements: JSON.parse( window.localStorage.getItem("graph") ).elements }).layout({ name: 'preset' }).run();
+  maxNodeId = 0;
+  try {
+    cy.json({ elements: graphObj.elements }).layout({ name: 'preset' }).run();
+  } catch(e) {
+    console.warn('Could not apply graph data:', e);
+    return;
+  }
   for (const node of cy.nodes()) {
     if (node.data('isFinal')) {
       node.style('border-width', 3);
@@ -214,37 +196,55 @@ function restoreGraph() {
     }
     addQtip(node);
     var nodeId = parseInt(node.data('id'));
-    if (nodeId >= maxNodeId) {
-      maxNodeId = nodeId + 1;
-    }
-    node.on('free',
-    function(evt){
-      saveGraph();
-    });
+    if (nodeId >= maxNodeId) maxNodeId = nodeId + 1;
+    node.on('free', function(evt){ saveGraph(); });
   }
   for (const edge of cy.edges()) {
     addQtipEdge(edge);
   }
 }
 
+// Lädt Graph — DB hat Vorrang, localStorage als Fallback
+async function restoreGraph() {
+  cy.elements().remove();
 
-// remove all nodes and edges
+  if (PROJECT_ID) {
+    try {
+      const graphObj = await API.loadProject(PROJECT_ID);
+      if (graphObj && graphObj.elements) {
+        applyGraphObject(graphObj);
+        return;
+      }
+    } catch(e) {
+      console.warn('Could not load from DB, falling back to localStorage:', e);
+    }
+  }
+
+  // Fallback: localStorage
+  const saved = window.localStorage.getItem(GRAPH_KEY);
+  if (!saved) return;
+  try {
+    const graphObj = JSON.parse(saved);
+    applyGraphObject(graphObj);
+  } catch(e) {
+    console.warn('Could not restore from localStorage:', e);
+  }
+}
+
 function clearGraph() {
   cy.elements().remove();
   maxNodeId = 0;
-  window.localStorage.removeItem("graph");
-  window.localStorage.removeItem("initialNodeId");
+  window.localStorage.removeItem(GRAPH_KEY);
+  window.localStorage.removeItem(INITIAL_NODE_KEY);
 }
 
-// on clicking "is final" checkbox
 function nodeFinalCallback(i) {
   var node = cy.$id(i);
   var isFinal = node.data('isFinal') || false;
   if (isFinal) {
     node.data('isFinal', false);
     node.style('border-width', 0);
-  }
-  else {
+  } else {
     node.data('isFinal', true);
     node.style('border-width', 3);
     node.style('border-color', '#000000');
@@ -255,19 +255,16 @@ function nodeFinalCallback(i) {
   saveGraph();
 }
 
-// on clicking "is initial" checkbox
 function nodeInitialCallback(i) {
   var node = cy.$id(i);
   var isInitial = node.data('isInitial') || false;
   if (isInitial) {
     node.data('isInitial', false);
     node.style('shape', 'ellipse');
-    window.localStorage.removeItem("initialNodeId");
-  }
-  else {
-    if (window.localStorage.getItem("initialNodeId") != null) {
-      console.log(window.localStorage.getItem("initialNodeId"))
-      var initialNode = cy.$id(window.localStorage.getItem("initialNodeId"));
+    window.localStorage.removeItem(INITIAL_NODE_KEY);
+  } else {
+    if (window.localStorage.getItem(INITIAL_NODE_KEY) != null) {
+      var initialNode = cy.$id(window.localStorage.getItem(INITIAL_NODE_KEY));
       initialNode.data('isInitial', false);
       initialNode.style('shape', 'ellipse');
       initialNode.qtip('api').destroy();
@@ -275,20 +272,17 @@ function nodeInitialCallback(i) {
     }
     node.data('isInitial', true);
     node.style('shape', 'round-triangle');
-    window.localStorage.setItem("initialNodeId", i);
+    window.localStorage.setItem(INITIAL_NODE_KEY, i);
   }
   node.qtip('api').destroy();
   addQtip(node);
   saveGraph();
 }
 
-
-// on clicking "add edge" button
 function addEdgeCallback(sourceId) {
   window.currentAddingEdgeSource = sourceId;
 }
 
-// add edge between two nodes
 function addEdge(sourceId, targetId) {
   maxNodeId++;
   cy.add(
@@ -303,15 +297,11 @@ function addEdge(sourceId, targetId) {
       },
     },
   );
-
   var edge = cy.$id(`e${sourceId}-${targetId}`);
   addQtipEdge(edge);
   saveGraph();
 }
 
-// callback: tap on node
-// if currently adding edge, add edge
-// else, show qtip
 cy.on('tap', 'node', function(evt){
   var node = evt.target;
   if (window.currentAddingEdgeSource != null) {
@@ -322,14 +312,10 @@ cy.on('tap', 'node', function(evt){
   }
 });
 
-// clicking on background cancels edge adding
 cy.on('tap', function (evt) {
-  if (evt.target === cy) {
-    window.currentAddingEdgeSource = null;
-  }
+  if (evt.target === cy) window.currentAddingEdgeSource = null;
 });
 
-// export graph as png
 function exportPNG() {
   var png64 = cy.png({scale: 1, full: true});
   const a = document.createElement('a');
