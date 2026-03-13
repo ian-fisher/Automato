@@ -33,10 +33,12 @@ class Transducer {
             }
 
             output.push(match.outputSymbol);
+
             currentState = match.to;
         }
 
-        return {output};
+        return {output: output.join("")}; // e.g. input = abcd --> output = 1234
+        //return {output}; // e.g input = abcd --> output = 1,2,3,4
     }
 
     refreshFromGraph() {

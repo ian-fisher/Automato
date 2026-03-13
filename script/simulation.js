@@ -6,7 +6,6 @@ const resultExceptionElement = document.getElementById("inputWordResultException
 const nextStepButton = document.getElementById("nextStepButton");
 const inputWordElement = document.getElementById("inputWord");
 
-
 // Runs simulation of the acceptor on the input word, step by step
 runSimulation = function (event) {
     // Prevent page reload
