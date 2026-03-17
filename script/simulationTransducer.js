@@ -3,7 +3,7 @@ const resultWordElement = document.getElementById("inputWordResultWord");
 const resultAcceptedElement = document.getElementById("inputWordResultAccepted");
 const resultExceptionElement = document.getElementById("inputWordResultException");
 
-const nextStepButton = document.getElementById("nextStepButton");
+const nextStepButton_t = document.getElementById("nextStepButton_t");
 const inputWordElement = document.getElementById("inputWord");
 
 // Runs simulation of the transducer on the input word, step by step
@@ -13,7 +13,7 @@ runSimulation = function(event) {
     const inputWord = inputWordElement.value;
     console.log("Running step-by-step simulation for input word:", inputWord);
     resetResult(inputWord);
-    nextStepButton.disabled = false;
+    nextStepButton_t.disabled = false;
 
     // Start simulation step-by-step
     startSBSSimulation_t(inputWord);
@@ -66,7 +66,7 @@ function simulationError(details) {
 
 // Simulation over — disable Next button
 function simulationEnd() {
-    nextStepButton.disabled = true;
+    nextStepButton_t.disabled = true;
 }
 
 // Badge for details / error message
