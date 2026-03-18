@@ -30,7 +30,7 @@
                 <li><a href="../pages/aboutUs.html" class="nav-link px-3">About us</a></li>
             </ul>
 
-            <div class="d-flex flex-wrap gap-2">
+            <div class="d-flex flex-wrap gap-2" id="authArea">
                 <button type="button" class="btn btn-sm btn-dark" onclick="window.location.href='../pages/login.html'">Log In</button>
             </div>
 
@@ -38,9 +38,14 @@
                 <a href="#" class="d-block text-decoration-none dropdown-toggle user-avatar" data-bs-toggle="dropdown">
                     <img src="../images/anonym_profile.png" width="40" height="40" class="rounded-circle">
                 </a>
+
                 <ul class="dropdown-menu dropdown-menu-end text-small shadow">
-                    <li><a class="dropdown-item" href="#"><i class="bi bi-person me-2"></i>Profile</a></li>
-                    <li><a class="dropdown-item" href="#" onclick="event.preventDefault(); API.logout(); closeCurrentProject()"><i class="bi bi-box-arrow-right me-2"></i>Log out</a></li>
+                    <li>
+                        <a class="dropdown-item" href="#" onclick="event.preventDefault(); ProjectManager.promptNewProject();">
+                            <i class="bi bi-plus-circle me-2"></i>New project...
+                        </a>
+                    </li>
+                    <li><a class="dropdown-item" href="#" onclick="event.preventDefault(); API.logout(); closeCurrentProject();"><i class="bi bi-box-arrow-right me-2"></i>Log out</a></li>
                 </ul>
             </div>
         </div>
@@ -239,4 +244,6 @@
         }, 2000);
     }
 </script>
+
+<script src="../script/project.js"></script>
 </html>

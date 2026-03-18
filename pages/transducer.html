@@ -13,6 +13,7 @@
 </head>
 
 <body>
+
 <div class="secondary-header border-bottom py-3 bg-light-subtle">
     <div class="container">
         <div class="d-flex flex-wrap align-items-center justify-content-between py-3">
@@ -30,7 +31,7 @@
                 <li><a href="../pages/aboutUs.html" class="nav-link px-3">About us</a></li>
             </ul>
 
-            <div class="d-flex flex-wrap gap-2">
+            <div class="d-flex flex-wrap gap-2" id="authArea">
                 <button type="button" class="btn btn-sm btn-dark" onclick="window.location.href='../pages/login.html'">Log In</button>
             </div>
 
@@ -38,8 +39,13 @@
                 <a href="#" class="d-block text-decoration-none dropdown-toggle user-avatar" data-bs-toggle="dropdown">
                     <img src="../images/anonym_profile.png" width="40" height="40" class="rounded-circle">
                 </a>
+
                 <ul class="dropdown-menu dropdown-menu-end text-small shadow">
-                    <li><a class="dropdown-item" href="#"><i class="bi bi-person me-2"></i>Profile</a></li>
+                    <li>
+                        <a class="dropdown-item" href="#" onclick="event.preventDefault(); ProjectManager.promptNewProject();">
+                            <i class="bi bi-plus-circle me-2"></i>New project...
+                        </a>
+                    </li>
                     <li><a class="dropdown-item" href="#" onclick="event.preventDefault(); API.logout(); closeCurrentProject();"><i class="bi bi-box-arrow-right me-2"></i>Log out</a></li>
                 </ul>
             </div>
@@ -142,6 +148,8 @@
 <script src="../script/transducerSBS.js"></script>
 <script src="../script/simulationTransducer.js"></script>
 
+
+
 <script>
     const saveBtn = document.getElementById('saveProjectBtn');
     const closeBtn = document.getElementById('closeProjectBtn');
@@ -203,7 +211,7 @@
         }
 
         // Projekt offen — direkt speichern
-        if (!graphJson) { alert('Nothing to save yet.'); return; }
+        if (!graphJson) { alert('No changes yet.'); return; }
 
         saveBtn.disabled = true;
         saveBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Saving...';
@@ -252,5 +260,8 @@
         }, 2000);
     }
 </script>
+
+<script src="../script/project.js"></script>
+
 </body>
 </html>
