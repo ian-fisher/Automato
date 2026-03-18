@@ -30,8 +30,8 @@
                 <li><a href="../pages/aboutUs.html" class="nav-link px-3">About us</a></li>
             </ul>
 
-            <div class="d-flex flex-wrap gap-2">
-                <button type="button" class="btn btn-sm btn-dark" onclick="window.location.href='../pages/login.html'">Log In</button>
+            <div class="d-flex flex-wrap gap-2" id="authArea">
+                <button type="button" class="btn btn-sm btn-dark" onclick="window.location.href='/pages/login.html'">Log In</button>
             </div>
 
             <div class="dropdown text-end">
@@ -65,7 +65,7 @@
             <input type="text" class="form-control toolbar-input" id="inputWord" placeholder="e.g.: input word">
             <button id="runAcceptorButton" onclick="inputWordSubmitHandler(event);">Run Transducer</button>
             <button type="button" id="runSimulationButton" onclick="runSimulation(event);">Run simulation</button>
-            <button type="button" id="nextStepButton_t" onclick="nextStep(event);" disabled>Next ▷</button>
+            <button type="button" id="nextStepButton" onclick="nextStep(event);" disabled>Next ▷</button>
         </div>
     </div>
 

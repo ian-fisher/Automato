@@ -320,6 +320,68 @@ public class Main {
         });
 
         // ---------------------------------------------------------------
+        // REGISTRIERUNG — POST /signup
+        // ---------------------------------------------------------------
+        server.createContext("/signup", exchange -> {
+            if ("POST".equals(exchange.getRequestMethod())) {
+
+                String body = new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
+                Map<String, String> params = parseFormData(body);
+                String username = params.get("username");
+                String password = params.get("password");
+
+                String response;
+
+                if (username == null || username.isBlank() || password == null || password.isBlank()) {
+                    response = "{\"error\":\"Username and password required\"}";
+                } else {
+                    // Prüfen ob Benutzername schon existiert
+                    boolean exists = false;
+                    try (Connection con = connect();
+                         PreparedStatement ps = con.prepareStatement("SELECT UserID FROM Users WHERE Username = ?")) {
+                        ps.setString(1, username);
+                        exists = ps.executeQuery().next();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                    if (exists) {
+                        response = "{\"error\":\"Username already taken\"}";
+                    } else {
+                        int newID = -1;
+                        try (Connection con = connect();
+                             PreparedStatement ps = con.prepareStatement(
+                                 "INSERT INTO Users (Username, Password) VALUES (?, ?)",
+                                 PreparedStatement.RETURN_GENERATED_KEYS)) {
+                            ps.setString(1, username);
+                            ps.setString(2, password);
+                            ps.executeUpdate();
+                            ResultSet keys = ps.getGeneratedKeys();
+                            if (keys.next()) newID = keys.getInt(1);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+                        if (newID != -1) {
+                            exchange.getResponseHeaders().add("Set-Cookie", "userID=" + newID + "; Path=/");
+                            exchange.getResponseHeaders().add("Set-Cookie", "username=" + username + "; Path=/");
+                            response = "{\"success\":true,\"userID\":" + newID + "}";
+                            System.out.println("New user registered: " + username);
+                        } else {
+                            response = "{\"error\":\"Registration failed\"}";
+                        }
+                    }
+                }
+
+                byte[] bytes = response.getBytes(StandardCharsets.UTF_8);
+                exchange.getResponseHeaders().set("Content-Type", "application/json");
+                exchange.sendResponseHeaders(200, bytes.length);
+                exchange.getResponseBody().write(bytes);
+                exchange.close();
+            }
+        });
+
+        // ---------------------------------------------------------------
         // SERVER STARTEN
         // ---------------------------------------------------------------
         server.start();
